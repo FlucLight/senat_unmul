@@ -27,7 +27,7 @@ class DashboardTest extends TestCase
 
         $this->actingAs($user)->get(route('beranda'))
             ->assertOk()
-            ->assertSee('Selamat datang, Prof. Andi')
+            ->assertSee('Halo, Prof. Andi')
             ->assertSee($user->nip);
     }
 

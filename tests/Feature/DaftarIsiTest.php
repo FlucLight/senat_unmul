@@ -181,7 +181,7 @@ class DaftarIsiTest extends TestCase
 
         Document::factory()->count(20)->create();
 
-        $this->get(route('dokumen.index'))->assertSee('Next');
+        $this->get(route('dokumen.index'))->assertSee('Berikutnya');
     }
 
     public function test_empty_state_is_shown_when_no_documents(): void

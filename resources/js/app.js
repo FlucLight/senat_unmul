@@ -15,6 +15,29 @@ if (toggle && sidebar && backdrop) {
     backdrop.addEventListener('click', closeSidebar);
 }
 
+// Mobile filter bottom sheet (Daftar Isi)
+const filterSheet = document.getElementById('filter-sheet');
+const filterToggle = document.getElementById('filter-toggle');
+const filterClose = document.getElementById('filter-close');
+const filterBackdrop = document.getElementById('filter-backdrop');
+
+function openFilters() {
+    if (!filterSheet || !filterBackdrop) return;
+    filterSheet.classList.remove('translate-y-full');
+    filterBackdrop.classList.remove('hidden');
+}
+
+function closeFilters() {
+    if (!filterSheet || !filterBackdrop) return;
+    filterSheet.classList.add('translate-y-full');
+    filterBackdrop.classList.add('hidden');
+}
+
+if (filterToggle) filterToggle.addEventListener('click', openFilters);
+if (filterClose) filterClose.addEventListener('click', closeFilters);
+if (filterBackdrop) filterBackdrop.addEventListener('click', closeFilters);
+
+// Copy QR verification link
 document.querySelectorAll('.copy-qr-link').forEach((button) => {
     button.addEventListener('click', async () => {
         const url = button.dataset.copyUrl;

@@ -2,12 +2,12 @@
 
 @php
     $classes = $active
-        ? 'flex items-center gap-3 rounded-lg bg-blue-700 px-3 py-2 text-sm font-medium text-white'
-        : 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white';
+        ? 'flex items-center gap-3 border-l-2 border-green-700 bg-green-50 py-2 pl-3 pr-3 text-sm font-medium text-green-700'
+        : 'flex items-center gap-3 border-l-2 border-transparent py-2 pl-3 pr-3 text-sm font-medium text-ink-500 transition hover:bg-white hover:text-ink-900';
 @endphp
 
 <a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
-    <span class="shrink-0">
+    <span class="shrink-0 {{ $active ? 'text-green-700' : 'text-ink-400' }}">
         @if ($icon === 'home')
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
