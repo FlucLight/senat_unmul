@@ -9,6 +9,16 @@
 </head>
 <body class="flex min-h-full flex-col items-center justify-center bg-paper px-4 py-12 antialiased">
     <main class="w-full max-w-[380px]">
+        {{-- Tautan Kembali ke Halaman Utama --}}
+        <div class="mb-4">
+            <a href="{{ route('welcome') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500 transition hover:text-green-700">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Kembali ke halaman utama
+            </a>
+        </div>
+
         <div class="mb-6 text-center">
             <h1 class="font-display text-xl font-semibold text-ink-900">Senat Fakultas Teknik</h1>
             <p class="mt-1 text-sm text-ink-400">Universitas Mulawarman</p>
@@ -89,13 +99,19 @@
                         </label>
                     </div>
 
-                    <div>
+                    <div class="space-y-2">
                         <button
                             type="submit"
                             class="w-full rounded-md bg-gold-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-100 focus:ring-offset-1"
                         >
                             Masuk
                         </button>
+                        <a
+                            href="{{ route('welcome') }}"
+                            class="block w-full rounded-md border border-frame-strong bg-surface py-2 text-center text-xs font-medium text-ink-700 transition hover:bg-surface-muted hover:text-ink-900"
+                        >
+                            Kembali
+                        </a>
                     </div>
                 </form>
 

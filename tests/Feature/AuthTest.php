@@ -12,7 +12,11 @@ class AuthTest extends TestCase
 
     public function test_guest_can_view_login_page(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee('NIP');
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('NIP')
+            ->assertSee('Kembali')
+            ->assertSee(route('welcome'));
     }
 
     public function test_guest_is_redirected_to_login_when_accessing_protected_page(): void
