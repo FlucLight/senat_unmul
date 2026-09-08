@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokumenController;
 use App\Models\Document;
 use Illuminate\Support\Facades\Route;
@@ -19,9 +20,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/beranda', function () {
-        return view('beranda');
-    })->name('beranda');
+    Route::get('/beranda', [DashboardController::class, 'index'])->name('beranda');
 
     Route::get('/dokumen', [DokumenController::class, 'index'])->name('dokumen.index');
     Route::get('/dokumen/{document}', [DokumenController::class, 'show'])->name('dokumen.show');
