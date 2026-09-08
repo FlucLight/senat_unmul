@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['jenis', 'nomor_surat', 'judul', 'status', 'created_by', 'content', 'pdf_path', 'qr_verification_url', 'finalized_at'])]
 #[Hidden(['content'])]
 class Document extends \Illuminate\Database\Eloquent\Model
 {
+    use HasFactory;
     public const JENIS = [
         'undangan' => 'Undangan',
         'berita_acara' => 'Berita Acara',
