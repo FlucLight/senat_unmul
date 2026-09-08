@@ -59,18 +59,29 @@ class DokumenController extends Controller
 
     public function downloadPdf(Document $document)
     {
-        if ($document->isDraft()
-            || ! $document->pdf_path
-            || ! Storage::disk('public')->exists($document->pdf_path)) {
+        if ($document->isDraft()) {
             return redirect()->route('dokumen.show', $document)
-                ->with('error', 'File PDF belum tersedia untuk dokumen ini.');
+                ->with('error', 'File PDF belum tersedia untuk dokumen draf.');
         }
 
-        return Storage::disk('public')->download($document->pdf_path);
+        if ($document->pdf_path && Storage::disk('public')->exists($document->pdf_path)) {
+            return Storage::disk('public')->download($document->pdf_path);
+        }
+
+        if ($document->jenis === 'daftar_hadir') {
+            return redirect()->route('dokumen.cetak', $document);
+        }
+
+        return redirect()->route('dokumen.show', $document)
+            ->with('error', 'File PDF belum tersedia untuk dokumen ini.');
     }
 
     public function createPlaceholder(Request $request, string $jenis)
     {
+        if ($jenis === 'daftar_hadir') {
+            return redirect()->route('dokumen.daftar-hadir.create');
+        }
+
         abort_unless(array_key_exists($jenis, Document::JENIS), 404);
 
         return view('dokumen.placeholder', [
@@ -82,6 +93,10 @@ class DokumenController extends Controller
 
     public function editPlaceholder(Request $request, string $jenis, Document $document)
     {
+        if ($jenis === 'daftar_hadir') {
+            return redirect()->route('dokumen.daftar-hadir.edit', $document);
+        }
+
         abort_unless(array_key_exists($jenis, Document::JENIS), 404);
         abort_unless($document->isDraft(), 403, 'Hanya dokumen draft yang dapat diedit.');
         abort_unless($document->jenis === $jenis, 404);

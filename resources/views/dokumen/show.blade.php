@@ -61,7 +61,65 @@
             </dl>
         </div>
 
-        @if ($document->content)
+        @if ($document->jenis === 'daftar_hadir' && is_array($document->content))
+            @php $content = $document->content; @endphp
+            {{-- Detail Acara Daftar Hadir --}}
+            <div class="overflow-hidden rounded-lg border border-frame bg-surface p-6 space-y-4">
+                <h2 class="font-display text-lg font-medium text-ink-900">Rincian acara</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <span class="text-ink-400">Hari / Tanggal:</span>
+                        <p class="tnum font-medium text-ink-900 mt-0.5">
+                            {{ !empty($content['tanggal']) ? \Carbon\Carbon::parse($content['tanggal'])->translatedFormat('l, d F Y') : '—' }}
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-ink-400">Waktu:</span>
+                        <p class="tnum font-medium text-ink-900 mt-0.5">
+                            {{ $content['waktu_mulai'] ?? '—' }} s/d {{ $content['waktu_selesai'] ?? '—' }} WITA
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-ink-400">Tempat:</span>
+                        <p class="font-medium text-ink-900 mt-0.5">{{ $content['tempat'] ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-ink-400">Penyelenggara:</span>
+                        <p class="font-medium text-ink-900 mt-0.5">{{ $content['penyelenggara'] ?? '—' }}</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-frame">
+                    <h3 class="font-display text-sm font-semibold text-ink-900 mb-3">
+                        Daftar Peserta ({{ count($content['peserta'] ?? []) }} orang)
+                    </h3>
+                    <div class="overflow-hidden rounded border border-frame">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-surface-muted font-medium text-ink-700">
+                                <tr>
+                                    <th class="w-12 px-3 py-2 text-center">No.</th>
+                                    <th class="px-3 py-2">Nama</th>
+                                    <th class="px-3 py-2">Jabatan / Instansi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-frame">
+                                @forelse ($content['peserta'] ?? [] as $idx => $p)
+                                    <tr class="hover:bg-gold-50/40">
+                                        <td class="tnum px-3 py-2 text-center text-ink-400">{{ $idx + 1 }}</td>
+                                        <td class="px-3 py-2 font-medium text-ink-900">{{ $p['nama'] ?? '—' }}</td>
+                                        <td class="px-3 py-2 text-ink-700">{{ $p['jabatan_instansi'] ?? '—' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-3 py-4 text-center text-ink-400 italic">Belum ada data peserta.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @elseif ($document->content)
             <div class="overflow-hidden rounded-lg border border-frame bg-surface">
                 <div class="border-b border-frame px-6 py-4">
                     <h2 class="font-display text-lg font-medium text-ink-900">Isi dokumen</h2>
@@ -91,6 +149,16 @@
                     </svg>
                     Download PDF
                 </a>
+
+                @if ($document->jenis === 'daftar_hadir')
+                    <a href="{{ route('dokumen.cetak', $document) }}" target="_blank"
+                        class="inline-flex items-center gap-1.5 rounded-md border border-frame-strong bg-surface px-4 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-surface-muted">
+                        <svg class="h-4 w-4 text-ink-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.656h10.5Z" />
+                        </svg>
+                        Cetak / Tanda Tangan
+                    </a>
+                @endif
             @endif
         </div>
     </div>
