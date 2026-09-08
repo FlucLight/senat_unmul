@@ -4,14 +4,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DaftarHadirController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\WelcomeController;
 use App\Models\Document;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('beranda')
-        : redirect()->route('login');
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // Halaman verifikasi keaslian dokumen publik via QR code
 Route::get('/verifikasi/{document}', [DaftarHadirController::class, 'verifikasi'])->name('dokumen.verifikasi');

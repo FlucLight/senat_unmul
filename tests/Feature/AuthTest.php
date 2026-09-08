@@ -20,9 +20,9 @@ class AuthTest extends TestCase
         $this->get('/beranda')->assertRedirect(route('login'));
     }
 
-    public function test_root_redirects_guest_to_login(): void
+    public function test_root_renders_welcome_page_for_guest(): void
     {
-        $this->get('/')->assertRedirect(route('login'));
+        $this->get('/')->assertOk()->assertSee('Sistem Manajemen');
     }
 
     public function test_user_can_login_with_nip_and_password(): void
