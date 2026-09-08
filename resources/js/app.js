@@ -1,18 +1,31 @@
-const sidebar = document.getElementById('sidebar');
-const backdrop = document.getElementById('sidebar-backdrop');
-const toggle = document.getElementById('sidebar-toggle');
+// Mobile Drawer Navigation (Gaya Moodle)
+const drawer = document.getElementById('mobile-drawer');
+const drawerBackdrop = document.getElementById('mobile-drawer-backdrop');
+const drawerToggle = document.getElementById('mobile-menu-toggle');
+const drawerClose = document.getElementById('mobile-drawer-close');
 
-function closeSidebar() {
-    if (sidebar) sidebar.classList.add('-translate-x-full');
-    if (backdrop) backdrop.classList.add('hidden');
+function closeDrawer() {
+    if (drawer) drawer.classList.add('-translate-x-full');
+    if (drawerBackdrop) drawerBackdrop.classList.add('hidden');
 }
 
-if (toggle && sidebar && backdrop) {
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('-translate-x-full');
-        backdrop.classList.toggle('hidden');
+function openDrawer() {
+    if (drawer) drawer.classList.remove('-translate-x-full');
+    if (drawerBackdrop) drawerBackdrop.classList.remove('hidden');
+}
+
+if (drawerToggle) drawerToggle.addEventListener('click', openDrawer);
+if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+
+// Close user dropdown when clicked outside
+const userDropdown = document.getElementById('user-menu-dropdown');
+if (userDropdown) {
+    document.addEventListener('click', (e) => {
+        if (!userDropdown.contains(e.target)) {
+            userDropdown.removeAttribute('open');
+        }
     });
-    backdrop.addEventListener('click', closeSidebar);
 }
 
 // Mobile filter bottom sheet (Daftar Isi)

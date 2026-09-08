@@ -10,7 +10,7 @@
             <h2 class="mt-1 font-display text-[28px] font-semibold leading-tight text-ink-900">
                 Halo, {{ auth()->user()->name }}
             </h2>
-            <p class="mt-1 text-sm text-ink-400">NIP {{ auth()->user()->nip }} &middot; Peran: {{ auth()->user()->role }}</p>
+            <p class="mt-1 text-sm text-ink-400">NIP {{ auth()->user()->nip }}, Peran: {{ auth()->user()->role }}</p>
         </div>
 
         {{-- Aksi cepat --}}
@@ -89,7 +89,7 @@
                                 <div class="min-w-0 flex-1">
                                     <p class="truncate text-sm font-medium text-ink-900">{{ $document->judul }}</p>
                                     <p class="mt-0.5 text-xs text-ink-400">
-                                        {{ $document->jenis_label }} &middot; dibuat oleh {{ $document->creator->name }}
+                                        {{ $document->jenis_label }} — dibuat oleh {{ $document->creator->name }}
                                     </p>
                                 </div>
                                 <div class="flex shrink-0 items-center gap-3">
