@@ -296,20 +296,24 @@
         </div>
     </div>
 
-    {{-- Modal Tempel Cepat Nama Peserta --}}
+    {{-- Modal Tempel Cepat Nama & Jabatan Peserta --}}
     <div id="paste-modal-backdrop" class="fixed inset-0 z-50 hidden bg-ink-900/60 backdrop-blur-sm"></div>
     <div id="paste-modal" class="fixed inset-x-4 top-1/2 z-50 mx-auto hidden max-w-lg -translate-y-1/2 rounded-lg border border-frame bg-surface p-6 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
-        <h3 class="font-display text-lg font-semibold text-ink-900">Tempel daftar nama peserta</h3>
-        <p class="mt-1 text-xs text-ink-400">
-            Salin dan tempel daftar nama dari pesan WhatsApp atau Excel (satu nama per baris).
+        <h3 class="font-display text-lg font-semibold text-ink-900">Tempel nama &amp; jabatan peserta</h3>
+        <p class="mt-1 text-xs leading-relaxed text-ink-400">
+            Salin daftar dari WhatsApp atau Excel. Sistem otomatis memisahkan nama dan jabatan berdasarkan pemisah tanda hubung (<code class="font-mono text-ink-700">-</code>), garis tegak (<code class="font-mono text-ink-700">|</code>), titik koma (<code class="font-mono text-ink-700">;</code>), atau tab (<code class="font-mono text-ink-700">Tab</code>).
         </p>
 
         <textarea
             id="paste-textarea"
-            rows="7"
-            placeholder="Dr. Eng. Ir. Fulan, M.T.&#10;Prof. Dr. Ir. Budi, M.Eng.&#10;Siti Rahma, S.T., M.T."
-            class="mt-3 w-full rounded-md border border-frame bg-surface p-3 text-xs text-ink-900 placeholder-ink-400 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100 font-mono"
+            rows="8"
+            placeholder="Contoh format yang didukung (satu orang per baris):&#10;1. Prof. Dr. Ir. Budi, M.T. - Dekan Fakultas Teknik&#10;2. Dr. Eng. Siti, M.Eng. - Wakil Dekan I&#10;Ir. Hendra, M.T. | Ketua Senat FT&#10;Ahmad Fauzi, S.T.; Dosen Teknik Elektro&#10;Siti Rahma, S.T.	Staf Tata Usaha"
+            class="mt-3 w-full rounded-md border border-frame bg-surface p-3 text-xs text-ink-900 placeholder-ink-400 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100 font-mono leading-relaxed"
         ></textarea>
+
+        <div class="mt-2 text-[11px] text-ink-400">
+            Nomor urut di awal baris (1., 2., dst) otomatis dibersihkan.
+        </div>
 
         <div class="mt-4 flex items-center justify-end gap-2">
             <button
@@ -495,6 +499,48 @@
             if (btnCancelPaste) btnCancelPaste.addEventListener('click', closePasteModal);
             if (pasteBackdrop) pasteBackdrop.addEventListener('click', closePasteModal);
 
+            function parseParticipantLine(rawLine) {
+                // 1. Bersihkan spasi dan nomor urut/bullet di awal baris (misal: "1. ", "1) ", "[1] ", "- ", "* ")
+                let cleaned = rawLine.replace(/^\s*(?:[\d]+[\.\)\:\-\]]+|[\-\*\•])\s*/, '').trim();
+
+                let nama = '';
+                let jabatan = '';
+
+                // 2. Deteksi pemisah berdasarkan prioritas
+                if (cleaned.includes('\t')) {
+                    // Tab (Excel / Google Sheets)
+                    const parts = cleaned.split('\t');
+                    nama = parts[0].trim();
+                    jabatan = parts.slice(1).join(' ').trim();
+                } else if (cleaned.includes('|')) {
+                    // Pipe (|)
+                    const parts = cleaned.split('|');
+                    nama = parts[0].trim();
+                    jabatan = parts.slice(1).join(' ').trim();
+                } else if (cleaned.includes(';')) {
+                    // Titik koma (;)
+                    const parts = cleaned.split(';');
+                    nama = parts[0].trim();
+                    jabatan = parts.slice(1).join(' ').trim();
+                } else if (/\s+\/\s+/.test(cleaned)) {
+                    // Garis miring dengan spasi (" / ")
+                    const parts = cleaned.split(/\s+\/\s+/);
+                    nama = parts[0].trim();
+                    jabatan = parts.slice(1).join(' ').trim();
+                } else if (/\s*[\u2013\u2014]\s*|\s+\-\s+/.test(cleaned)) {
+                    // Tanda hubung dengan spasi atau en/em dash (" - ", " – ", " — ")
+                    const parts = cleaned.split(/\s*[\u2013\u2014]\s*|\s+\-\s+/);
+                    nama = parts[0].trim();
+                    jabatan = parts.slice(1).join(' ').trim();
+                } else {
+                    // Tanpa pemisah, seluruh baris dianggap nama
+                    nama = cleaned.trim();
+                    jabatan = '';
+                }
+
+                return { nama, jabatan };
+            }
+
             if (btnApplyPaste) {
                 btnApplyPaste.addEventListener('click', () => {
                     const text = pasteTextarea.value;
@@ -503,7 +549,7 @@
                         .filter(l => l.length > 0);
 
                     if (lines.length > 0) {
-                        // Clear empty first rows if any
+                        // Bersihkan baris kosong awal jika belum diisi apa-apa
                         const existingInputs = tbody.querySelectorAll('.peserta-input-nama');
                         if (existingInputs.length <= 2) {
                             const allEmpty = Array.from(existingInputs).every(i => i.value.trim() === '');
@@ -513,11 +559,10 @@
                         }
 
                         lines.forEach(line => {
-                            // Support TSV/tab separation if copied from Excel (Nama \t Jabatan)
-                            const parts = line.split('\t');
-                            const nama = parts[0] || '';
-                            const jab = parts[1] || '';
-                            createRow(nama, jab);
+                            const { nama, jabatan } = parseParticipantLine(line);
+                            if (nama) {
+                                createRow(nama, jabatan);
+                            }
                         });
 
                         updateRowNumbers();
