@@ -20,6 +20,7 @@
         </div>
 
         <div class="mb-6 text-center">
+            <img src="{{ asset('image.png') }}" alt="Logo Senat Fakultas Teknik" class="mx-auto mb-3 h-14 w-auto object-contain">
             <h1 class="font-display text-xl font-semibold text-ink-900">Senat Fakultas Teknik</h1>
             <p class="mt-1 text-sm text-ink-400">Universitas Mulawarman</p>
         </div>

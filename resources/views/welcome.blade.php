@@ -13,7 +13,7 @@
             {{-- Kiri: Brand --}}
             <div class="flex items-center gap-3">
                 <a href="{{ route('welcome') }}" class="flex items-center gap-2.5">
-                    <span class="flex h-8 w-8 items-center justify-center rounded bg-gold-600 font-display text-xs font-semibold text-white">FT</span>
+                    <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-8 w-auto object-contain">
                     <div>
                         <p class="font-display text-sm font-semibold leading-tight text-ink-900">Senat Fakultas Teknik</p>
                         <p class="text-[11px] text-ink-400">Universitas Mulawarman</p>
@@ -49,10 +49,10 @@
         <div id="welcome-drawer-backdrop" class="fixed inset-0 z-40 hidden bg-ink-900/50 md:hidden"></div>
         <aside id="welcome-drawer" class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-frame bg-surface transition-transform duration-200 md:hidden">
             <div class="flex h-[60px] items-center justify-between border-b border-frame px-4">
-                <div class="flex items-center gap-2">
-                    <span class="flex h-7 w-7 items-center justify-center rounded bg-gold-600 font-display text-xs font-semibold text-white">FT</span>
-                    <span class="font-display text-sm font-semibold text-ink-900">Senat FT</span>
-                </div>
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-7 w-auto object-contain">
+                <span class="font-display text-sm font-semibold text-ink-900">Senat FT</span>
+            </div>
                 <button id="welcome-drawer-close" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-400 hover:bg-surface-muted" aria-label="Tutup menu">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />

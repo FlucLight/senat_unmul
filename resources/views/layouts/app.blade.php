@@ -28,8 +28,8 @@
                 </button>
 
                 {{-- Logo / Nama Sistem --}}
-                <a href="{{ route('beranda') }}" class="flex items-center gap-2">
-                    <span class="flex h-8 w-8 items-center justify-center rounded bg-gold-600 font-display text-xs font-semibold text-white">FT</span>
+                <a href="{{ route('beranda') }}" class="flex items-center gap-2.5">
+                    <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-8 w-auto object-contain">
                     <span class="font-display text-base font-semibold text-ink-900">Senat FT</span>
                 </a>
 
@@ -95,7 +95,7 @@
     <aside id="mobile-drawer" class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-frame bg-surface transition-transform duration-200 md:hidden">
         <div class="flex h-[60px] items-center justify-between border-b border-frame px-4">
             <div class="flex items-center gap-2">
-                <span class="flex h-7 w-7 items-center justify-center rounded bg-gold-600 font-display text-xs font-semibold text-white">FT</span>
+                <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-7 w-auto object-contain">
                 <span class="font-display text-sm font-semibold text-ink-900">Senat FT</span>
             </div>
             <button id="mobile-drawer-close" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-400 hover:bg-surface-muted hover:text-ink-900" aria-label="Tutup menu">

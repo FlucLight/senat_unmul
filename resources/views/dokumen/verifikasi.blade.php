@@ -9,9 +9,7 @@
 <body class="flex min-h-full flex-col items-center justify-center bg-paper px-4 py-12 antialiased">
     <main class="w-full max-w-lg">
         <div class="mb-6 text-center">
-            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-gold-600 font-display text-sm font-bold text-white">
-                FT
-            </div>
+            <img src="{{ asset('image.png') }}" alt="Logo Senat Fakultas Teknik" class="mx-auto mb-3 h-14 w-auto object-contain">
             <h1 class="font-display text-xl font-bold text-ink-900">Senat Fakultas Teknik</h1>
             <p class="text-xs text-ink-400">Universitas Mulawarman &middot; Portal Verifikasi Dokumen</p>
         </div>

@@ -49,13 +49,16 @@
     {{-- Kertas A4 Dokumen Resmi --}}
     <main class="mx-auto my-6 max-w-[21cm] bg-white p-8 sm:p-12 shadow-sm border border-frame print:m-0 print:border-0 print:p-0 print:shadow-none">
         {{-- Kop Surat Resmi Senat FT Unmul --}}
-        <div class="border-b-2 border-ink-900 pb-3 text-center">
-            <p class="text-xs font-semibold uppercase tracking-widest text-ink-700">Kementerian Pendidikan Tinggi, Sains, dan Teknologi</p>
-            <p class="text-sm font-bold uppercase tracking-wider text-ink-900">Universitas Mulawarman</p>
-            <p class="font-display text-base font-bold uppercase tracking-tight text-ink-900">Fakultas Teknik — Senat Fakultas</p>
-            <p class="mt-0.5 text-[10px] text-ink-500">
-                Jalan Sambaliung No. 9, Kampus Gunung Kelua, Samarinda 75119 &middot; Laman: senat.ft.unmul.ac.id
-            </p>
+        <div class="flex items-center gap-4 border-b-2 border-ink-900 pb-3">
+            <img src="{{ asset('image.png') }}" alt="Logo Unmul" class="h-20 w-auto object-contain">
+            <div class="flex-1 text-center">
+                <p class="text-xs font-semibold uppercase tracking-widest text-ink-700">Kementerian Pendidikan Tinggi, Sains, dan Teknologi</p>
+                <p class="text-sm font-bold uppercase tracking-wider text-ink-900">Universitas Mulawarman</p>
+                <p class="font-display text-base font-bold uppercase tracking-tight text-ink-900">Fakultas Teknik — Senat Fakultas</p>
+                <p class="mt-0.5 text-[10px] text-ink-500">
+                    Jalan Sambaliung No. 9, Kampus Gunung Kelua, Samarinda 75119 &middot; Laman: senat.ft.unmul.ac.id
+                </p>
+            </div>
         </div>
 
         {{-- Judul Dokumen & Nomor Surat --}}
