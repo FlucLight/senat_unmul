@@ -4,12 +4,19 @@ namespace Tests\Feature;
 
 use App\Models\JenisSurat;
 use App\Models\Surat;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SuratTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->actingAs(User::factory()->create());
+    }
 
     public function test_halaman_index_menampilkan_daftar_surat(): void
     {

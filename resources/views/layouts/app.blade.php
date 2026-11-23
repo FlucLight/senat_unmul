@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistem Senat Fakultas Teknik')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="flex min-h-full flex-col bg-paper antialiased">
     @php
@@ -48,6 +49,13 @@
                             {{ $label }}
                         </x-nav-link>
                     @endforeach
+
+                    <x-nav-link :href="route('surat.index')" :active="request()->routeIs('surat.*')">
+                        Surat
+                    </x-nav-link>
+                    <x-nav-link :href="route('jenis_surat.index')" :active="request()->routeIs('jenis_surat.*')">
+                        Template Surat
+                    </x-nav-link>
                 </nav>
             </div>
 
@@ -121,6 +129,15 @@
                     {{ $label }}
                 </a>
             @endforeach
+
+            <div class="my-3 border-t border-frame"></div>
+            <p class="px-2 pb-1 text-xs font-medium text-ink-400">Pembuat surat</p>
+            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                Surat
+            </a>
+            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                Template Surat
+            </a>
         </nav>
 
         <div class="border-t border-frame p-4">
@@ -173,5 +190,6 @@
     <footer class="border-t border-frame bg-surface px-4 py-4 text-center text-xs text-ink-400 sm:px-8">
         &copy; {{ date('Y') }} Senat Fakultas Teknik, Universitas Mulawarman.
     </footer>
+    @stack('scripts')
 </body>
 </html>

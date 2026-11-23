@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
         ->name('dokumen.edit');
 
     // Modul pembuat surat (Senatitor) — ikut proteksi login NIP
+    Route::view('/pembuat-surat', 'index')->name('pembuat-surat');
     Route::resource('jenis_surat', JenisSuratController::class);
     Route::resource('surat', SuratController::class);
     Route::get('surat/{surat}/pdf', [SuratController::class, 'exportPdf'])->name('surat.pdf');
