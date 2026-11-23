@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DaftarHadirController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\JenisSuratController;
+use App\Http\Controllers\SuratController;
 use App\Http\Controllers\WelcomeController;
 use App\Models\Document;
 use Illuminate\Support\Facades\Route;
@@ -43,4 +45,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dokumen/{jenis}/{document}/edit', [DokumenController::class, 'editPlaceholder'])
         ->whereIn('jenis', array_keys(Document::JENIS))
         ->name('dokumen.edit');
+
+    // Modul pembuat surat (Senatitor) — ikut proteksi login NIP
+    Route::resource('jenis_surat', JenisSuratController::class);
+    Route::resource('surat', SuratController::class);
+    Route::get('surat/{surat}/pdf', [SuratController::class, 'exportPdf'])->name('surat.pdf');
+    Route::get('surat/{surat}/pdf/download', [SuratController::class, 'downloadPdf'])->name('surat.pdf.download');
 });

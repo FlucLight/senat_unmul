@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nip')->unique();
             $table->string('name');
             $table->string('email')->nullable()->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('pengurus');
             $table->boolean('is_active')->default(true);
