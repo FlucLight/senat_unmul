@@ -36,6 +36,11 @@
 
                 {{-- Navigasi Desktop (teks saja, underline 2px green-700 saat aktif) --}}
                 <nav class="hidden h-full items-center md:flex">
+                    @if (auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
+                            Kelola Akun
+                        </x-nav-link>
+                    @endif
                     <x-nav-link :href="route('beranda')" :active="request()->routeIs('beranda')">
                         Beranda
                     </x-nav-link>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\DaftarHadirController;
@@ -70,6 +71,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dokumen/{jenis}/{document}/edit', [DokumenController::class, 'editPlaceholder'])
         ->whereIn('jenis', array_keys(Document::JENIS))
         ->name('dokumen.edit');
+
+    // Admin: kelola akun pengurus
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
+    Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::post('/admin/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('admin.users.resetPassword');
 
     // Modul pembuat surat (Senatitor) — ikut proteksi login NIP
     Route::view('/pembuat-surat', 'index')->name('pembuat-surat');
