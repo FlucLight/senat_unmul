@@ -8,22 +8,20 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminUserController extends Controller
 {
-    public function __construct()
+    private function authorizeAdmin(): void
     {
-        $this->middleware(function ($request, $next) {
-            abort_unless(auth()->check() && in_array(auth()->user()->role, ['admin', 'operator']), 403);
-            return $next($request);
-        });
+        abort_unless(auth()->check() && in_array(auth()->user()->role, ['admin', 'operator']), 403);
     }
-
     public function index()
     {
+        $this->authorizeAdmin();
         $users = User::orderBy('name')->get();
         return view('admin.users.index', compact('users'));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
         $validated = $request->validate([
             'nip' => ['required', 'string', 'unique:users,nip'],
             'name' => ['required', 'string', 'max:255'],
@@ -51,6 +49,7 @@ class AdminUserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $this->authorizeAdmin();
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'unique:users,email,' . $user->id],
@@ -74,6 +73,7 @@ class AdminUserController extends Controller
 
     public function resetPassword(Request $request, User $user)
     {
+        $this->authorizeAdmin();
         $validated = $request->validate([
             'password' => ['required', 'string', 'min:6'],
         ]);
