@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesHtmlDocument;
 use App\Models\Document;
 use App\Services\Document\DocumentRenderer;
 use App\Services\NomorSuratService;
@@ -10,16 +11,19 @@ use Illuminate\Support\Facades\DB;
 
 class SuratPengantarController extends Controller
 {
+    use HandlesHtmlDocument;
+
     public function create()
     {
-        return view('dokumen.surat_pengantar.form', [
-            'document' => null,
-            'content' => $this->defaultContent(),
-        ]);
+        return $this->renderHtmlCreate('surat_pengantar', 'Surat Pengantar', 'dokumen.surat_pengantar.form');
     }
 
     public function store(Request $request)
     {
+        if ($request->input('form_mode') === 'html') {
+            return $this->saveHtmlDocument($request, 'surat_pengantar', null);
+        }
+
         return $this->save($request, null);
     }
 
@@ -28,18 +32,17 @@ class SuratPengantarController extends Controller
         abort_unless($document->jenis === 'surat_pengantar', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
-        $content = array_merge($this->defaultContent(), (array) $document->content);
-
-        return view('dokumen.surat_pengantar.form', [
-            'document' => $document,
-            'content' => $content,
-        ]);
+        return $this->renderHtmlEdit($document, 'surat_pengantar', 'dokumen.surat_pengantar.form', 'dokumen.surat_pengantar.form_legacy');
     }
 
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'surat_pengantar', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
+
+        if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {
+            return $this->saveHtmlDocument($request, 'surat_pengantar', $document);
+        }
 
         return $this->save($request, $document);
     }
@@ -71,8 +74,8 @@ class SuratPengantarController extends Controller
             'perihal' => ['required', 'string', 'max:255'],
             'tanggal_surat' => [$isFinal ? 'required' : 'nullable', 'date'],
             'tujuan' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
-            'isi_ringkas' => ['nullable', 'string'],
-            'penandatangan' => ['nullable', 'string', 'max:255'],
+            'isi_ringkas' => [$isFinal ? 'required' : 'nullable', 'string'],
+            'penandatangan' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
         ];
 
         $validated = $request->validate($rules);
@@ -86,7 +89,7 @@ class SuratPengantarController extends Controller
         ];
 
         return DB::transaction(function () use ($document, $validated, $content, $isFinal) {
-            if ($document === null) {
+            if (! $document) {
                 $document = Document::create([
                     'jenis' => 'surat_pengantar',
                     'judul' => $validated['perihal'],
@@ -122,8 +125,7 @@ class SuratPengantarController extends Controller
             }
 
             return redirect()->route('dokumen.surat-pengantar.edit', $document)
-                ->with('status', 'Draf surat pengantar berhasil disimpan.');
+                ->with('status', $document->wasRecentlyCreated ? 'Draf surat pengantar berhasil disimpan.' : 'Perubahan draf surat pengantar berhasil disimpan.');
         });
     }
 }
-

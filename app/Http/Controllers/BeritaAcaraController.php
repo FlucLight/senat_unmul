@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesHtmlDocument;
 use App\Models\Document;
 use App\Services\Document\DocumentRenderer;
 use App\Services\NomorSuratService;
@@ -10,16 +11,19 @@ use Illuminate\Support\Facades\DB;
 
 class BeritaAcaraController extends Controller
 {
+    use HandlesHtmlDocument;
+
     public function create()
     {
-        return view('dokumen.berita_acara.form', [
-            'document' => null,
-            'content' => $this->defaultContent(),
-        ]);
+        return $this->renderHtmlCreate('berita_acara', 'Berita Acara', 'dokumen.berita_acara.form');
     }
 
     public function store(Request $request)
     {
+        if ($request->input('form_mode') === 'html') {
+            return $this->saveHtmlDocument($request, 'berita_acara', null);
+        }
+
         return $this->save($request, null);
     }
 
@@ -28,18 +32,17 @@ class BeritaAcaraController extends Controller
         abort_unless($document->jenis === 'berita_acara', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
-        $content = array_merge($this->defaultContent(), (array) $document->content);
-
-        return view('dokumen.berita_acara.form', [
-            'document' => $document,
-            'content' => $content,
-        ]);
+        return $this->renderHtmlEdit($document, 'berita_acara', 'dokumen.berita_acara.form', 'dokumen.berita_acara.form_legacy');
     }
 
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'berita_acara', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
+
+        if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {
+            return $this->saveHtmlDocument($request, 'berita_acara', $document);
+        }
 
         return $this->save($request, $document);
     }
@@ -75,9 +78,9 @@ class BeritaAcaraController extends Controller
             'tanggal_surat' => [$isFinal ? 'required' : 'nullable', 'date'],
             'tanggal_rapat' => [$isFinal ? 'required' : 'nullable', 'date'],
             'tempat' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
-            'pemimpin_rapat' => ['nullable', 'string', 'max:255'],
-            'pembahasan' => ['nullable', 'string'],
-            'keputusan' => ['nullable', 'string'],
+            'pemimpin_rapat' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
+            'pembahasan' => [$isFinal ? 'required' : 'nullable', 'string'],
+            'keputusan' => [$isFinal ? 'required' : 'nullable', 'string'],
             'peserta' => ['nullable', 'array'],
             'peserta.*.nama' => ['nullable', 'string', 'max:255'],
             'peserta.*.jabatan_instansi' => ['nullable', 'string', 'max:255'],
@@ -94,12 +97,6 @@ class BeritaAcaraController extends Controller
             ->values()
             ->all();
 
-        if ($isFinal && count($peserta) < 1) {
-            return back()->withInput()->withErrors([
-                'peserta' => 'Minimal 1 peserta wajib diisi untuk finalisasi dokumen.',
-            ]);
-        }
-
         $content = [
             'perihal' => $validated['perihal'],
             'tanggal_surat' => $validated['tanggal_surat'] ?? null,
@@ -112,7 +109,7 @@ class BeritaAcaraController extends Controller
         ];
 
         return DB::transaction(function () use ($document, $validated, $content, $isFinal) {
-            if ($document === null) {
+            if (! $document) {
                 $document = Document::create([
                     'jenis' => 'berita_acara',
                     'judul' => $validated['perihal'],
@@ -148,8 +145,7 @@ class BeritaAcaraController extends Controller
             }
 
             return redirect()->route('dokumen.berita-acara.edit', $document)
-                ->with('status', 'Draf berita acara berhasil disimpan.');
+                ->with('status', $document->wasRecentlyCreated ? 'Draf berita acara berhasil disimpan.' : 'Perubahan draf berita acara berhasil disimpan.');
         });
     }
 }
-

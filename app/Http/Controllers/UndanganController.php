@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesHtmlDocument;
 use App\Models\Document;
 use App\Services\Document\DocumentRenderer;
 use App\Services\NomorSuratService;
@@ -10,16 +11,19 @@ use Illuminate\Support\Facades\DB;
 
 class UndanganController extends Controller
 {
+    use HandlesHtmlDocument;
+
     public function create()
     {
-        return view('dokumen.undangan.form', [
-            'document' => null,
-            'content' => $this->defaultContent(),
-        ]);
+        return $this->renderHtmlCreate('undangan', 'Undangan', 'dokumen.undangan.form');
     }
 
     public function store(Request $request)
     {
+        if ($request->input('form_mode') === 'html') {
+            return $this->saveHtmlDocument($request, 'undangan', null);
+        }
+
         return $this->save($request, null);
     }
 
@@ -28,18 +32,17 @@ class UndanganController extends Controller
         abort_unless($document->jenis === 'undangan', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
-        $content = array_merge($this->defaultContent(), (array) $document->content);
-
-        return view('dokumen.undangan.form', [
-            'document' => $document,
-            'content' => $content,
-        ]);
+        return $this->renderHtmlEdit($document, 'undangan', 'dokumen.undangan.form', 'dokumen.undangan.form_legacy');
     }
 
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'undangan', 404);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
+
+        if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {
+            return $this->saveHtmlDocument($request, 'undangan', $document);
+        }
 
         return $this->save($request, $document);
     }
@@ -75,11 +78,11 @@ class UndanganController extends Controller
             'perihal' => ['required', 'string', 'max:255'],
             'tanggal_surat' => [$isFinal ? 'required' : 'nullable', 'date'],
             'tanggal_acara' => [$isFinal ? 'required' : 'nullable', 'date'],
-            'waktu_mulai' => ['nullable', 'string', 'max:20'],
-            'waktu_selesai' => ['nullable', 'string', 'max:20'],
+            'waktu_mulai' => [$isFinal ? 'required' : 'nullable', 'string', 'max:20'],
+            'waktu_selesai' => [$isFinal ? 'required' : 'nullable', 'string', 'max:20'],
             'tempat' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
-            'pemimpin_rapat' => ['nullable', 'string', 'max:255'],
-            'agenda' => ['nullable', 'string'],
+            'pemimpin_rapat' => [$isFinal ? 'required' : 'nullable', 'string', 'max:255'],
+            'agenda' => [$isFinal ? 'required' : 'nullable', 'string'],
             'undangan' => ['nullable', 'array'],
             'undangan.*.nama' => ['nullable', 'string', 'max:255'],
             'undangan.*.jabatan_instansi' => ['nullable', 'string', 'max:255'],
@@ -96,12 +99,6 @@ class UndanganController extends Controller
             ->values()
             ->all();
 
-        if ($isFinal && count($undangan) < 1) {
-            return back()->withInput()->withErrors([
-                'undangan' => 'Minimal 1 nama undangan wajib diisi untuk finalisasi dokumen.',
-            ]);
-        }
-
         $content = [
             'perihal' => $validated['perihal'],
             'tanggal_surat' => $validated['tanggal_surat'] ?? null,
@@ -115,7 +112,7 @@ class UndanganController extends Controller
         ];
 
         return DB::transaction(function () use ($document, $validated, $content, $isFinal) {
-            if ($document === null) {
+            if (! $document) {
                 $document = Document::create([
                     'jenis' => 'undangan',
                     'judul' => $validated['perihal'],
@@ -150,10 +147,8 @@ class UndanganController extends Controller
                     ->with('status', 'Undangan berhasil difinalisasi dan nomor surat resmi telah diterbitkan.');
             }
 
-            $route = $document->wasRecentlyCreated ? 'dokumen.undangan.edit' : 'dokumen.undangan.edit';
-            return redirect()->route($route, $document)
-                ->with('status', 'Draf undangan berhasil disimpan.');
+            return redirect()->route('dokumen.undangan.edit', $document)
+                ->with('status', $document->wasRecentlyCreated ? 'Draf undangan berhasil disimpan.' : 'Perubahan draf undangan berhasil disimpan.');
         });
     }
 }
-
