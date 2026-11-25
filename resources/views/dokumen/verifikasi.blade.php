@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verifikasi {{ $document->nomor_surat ?? 'Dokumen' }} — Senat FT Unmul</title>
+    <title>Verifikasi {{ $document->nomor_surat ?? 'Dokumen' }} - Senat FT Unmul</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css'])
 </head>
 <body class="flex min-h-full flex-col bg-paper antialiased">

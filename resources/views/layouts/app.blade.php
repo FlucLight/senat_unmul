@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistem Senat Fakultas Teknik') — Senat FT Unmul</title>
+    <title>@hasSection('title')@yield('title') - Senat FT Unmul@else Senat FT Unmul @endif</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
