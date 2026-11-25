@@ -139,6 +139,15 @@ class BeritaAcaraController extends Controller
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
 
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.berita_acara.print', [
+                    'document' => $document->fresh(),
+                    'content' => (array) $document->fresh()->content,
+                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
+                ]);
+                $path = 'dokumen/' . $document->id . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
+                $document->update(['pdf_path' => $path]);
+
                 return redirect()->route('dokumen.show', $document)
                     ->with('status', 'Berita acara berhasil difinalisasi dan nomor surat resmi telah diterbitkan.');
             }

@@ -142,6 +142,15 @@ class UndanganController extends Controller
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
 
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.undangan.print', [
+                    'document' => $document->fresh(),
+                    'content' => (array) $document->fresh()->content,
+                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
+                ]);
+                $path = 'dokumen/' . $document->id . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
+                $document->update(['pdf_path' => $path]);
+
                 return redirect()->route('dokumen.show', $document)
                     ->with('status', 'Undangan berhasil difinalisasi dan nomor surat resmi telah diterbitkan.');
             }
