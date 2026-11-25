@@ -29,6 +29,7 @@ class HtmlDocumentRenderer implements DocumentRendererInterface
     public function print(Document $document): View
     {
         $payload = $this->pdfPayload($document);
+        $payload['data']['isPdf'] = false;
 
         return view($payload['view'], $payload['data']);
     }
@@ -44,6 +45,7 @@ class HtmlDocumentRenderer implements DocumentRendererInterface
                 'document' => $document,
                 'bodyHtml' => $this->resolvedBody($document, PlaceholderResolver::MODE_FINAL, $qrDataUri),
                 'qrDataUri' => $qrDataUri,
+                'isPdf' => true,
             ],
         ];
     }

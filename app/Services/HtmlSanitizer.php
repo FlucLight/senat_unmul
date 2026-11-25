@@ -34,7 +34,7 @@ class HtmlSanitizer
     private const TAG_ATTRS = [
         'span' => ['class', 'style', 'data-ph', 'contenteditable'],
         'div' => ['class', 'style'],
-        'table' => ['class', 'style', 'data-table'],
+        'table' => ['class', 'style', 'data-table', 'border', 'cellpadding'],
         'th' => ['class', 'style', 'colspan', 'rowspan'],
         'td' => ['class', 'style', 'colspan', 'rowspan'],
         'col' => ['class', 'style', 'span'],
@@ -73,7 +73,7 @@ class HtmlSanitizer
         $config->set('HTML.AllowedAttributes', [
             '*.class', '*.style',
             'span.contenteditable', 'span.data-ph',
-            'table.data-table',
+            'table.data-table', 'table.border', 'table.cellpadding',
             'td.colspan', 'td.rowspan', 'th.colspan', 'th.rowspan', 'col.span',
         ]);
         $config->set('CSS.AllowedProperties', self::ALLOWED_CSS_PROPERTIES);
@@ -84,6 +84,8 @@ class HtmlSanitizer
         $def = $config->getHTMLDefinition(true);
         $def->addAttribute('span', 'data-ph', 'Text');
         $def->addAttribute('table', 'data-table', 'Text');
+        $def->addAttribute('table', 'border', 'Text');
+        $def->addAttribute('table', 'cellpadding', 'Text');
         $def->addAttribute('span', 'contenteditable', 'Enum#false,true');
 
         $purifier = new \HTMLPurifier($config);

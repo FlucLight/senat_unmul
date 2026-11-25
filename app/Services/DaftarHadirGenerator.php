@@ -44,7 +44,8 @@ class DaftarHadirGenerator
             ? '..............................................................'
             : '<span class="ph" data-ph="perihal" contenteditable="false">' . e((string) ($input['nama_acara'] ?? '[Nama acara]')) . '</span>';
 
-        return '<p><strong>Daftar Hadir</strong></p>'
+        return '<p style="text-align:center; font-weight:bold; font-size:14pt; text-decoration:underline; margin: 0 0 2pt 0;">DAFTAR HADIR</p>'
+            . '<p style="text-align:center; margin: 0 0 12pt 0;">Nomor: <span class="ph" data-ph="nomor_surat" contenteditable="false">[Nomor diberikan saat finalisasi]</span></p>'
             . '<table style="width:100%; border-collapse:collapse; margin: 6pt 0 10pt 0;">'
             . '<tr><td style="width:140px; padding:2px 0;">Hari/Tanggal</td><td style="width:12px; padding:2px 0;">:</td><td style="padding:2px 0;">' . $tanggal . '</td></tr>'
             . '<tr><td style="padding:2px 0;">Waktu</td><td style="padding:2px 0;">:</td><td style="padding:2px 0;">' . $waktu . '</td></tr>'
@@ -122,7 +123,7 @@ class DaftarHadirGenerator
 
         return '<table style="width:100%; border-collapse:collapse; margin-top: 24pt;">'
             . '<tr><td style="width:55%; vertical-align:top;"><span class="ph" data-ph="qr_verifikasi" contenteditable="false">[QR verifikasi]</span></td>'
-            . '<td style="width:45%; text-align:center;">'
+            . '<td style="width:45%; text-align:center; vertical-align:top;">'
             . '<p>Samarinda, ' . $tanggal . '</p>'
             . '<p>[Pimpinan rapat / Ketua Senat]</p>'
             . '<div style="height:72px;"></div>'
@@ -137,7 +138,7 @@ class DaftarHadirGenerator
             return '-';
         }
         try {
-            return \Carbon\Carbon::parse($value)->translatedFormat('l, d F Y');
+            return \Carbon\Carbon::parse($value)->locale('id')->translatedFormat('l, d F Y');
         } catch (\Throwable) {
             return (string) $value;
         }

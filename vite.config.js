@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -8,14 +7,6 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/rich-editor.js', 'resources/js/daftar-hadir-table.js'],
             refresh: true,
-            fonts: [
-                bunny('Source Serif 4', {
-                    weights: [600],
-                }),
-                bunny('Source Sans 3', {
-                    weights: [400, 500, 600],
-                }),
-            ],
         }),
         tailwindcss(),
     ],

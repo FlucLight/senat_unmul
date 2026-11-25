@@ -16,6 +16,7 @@ class LegacyDocumentRenderer implements DocumentRendererInterface
     public function print(Document $document): View
     {
         $payload = $this->pdfPayload($document);
+        $payload['data']['isPdf'] = false;
 
         return view($payload['view'], $payload['data']);
     }
@@ -30,6 +31,7 @@ class LegacyDocumentRenderer implements DocumentRendererInterface
                 'document' => $document,
                 'content' => (array) $document->content,
                 'qrDataUri' => $this->qrDataUri($document),
+                'isPdf' => true,
             ],
         ];
     }

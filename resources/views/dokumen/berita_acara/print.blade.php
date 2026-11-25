@@ -40,13 +40,15 @@
     $finalTgl = ($document->finalized_at ?? $document->created_at)->translatedFormat('d F Y');
 @endphp
 
+@if(empty($isPdf))
 <div class="no-print">
     <a href="{{ route('dokumen.show', $document) }}">Kembali</a>
     <button onclick="window.print()">Cetak / Simpan PDF</button>
 </div>
+@endif
 
 <table class="kop"><tr>
-    <td class="kop-logo">@if($logoData)<img src="{{ $logoData }}" alt="Logo">@endif</td>
+    <td class="kop-logo">@if($logoData)<img src="{{ $logoData }}" alt="">@endif</td>
     <td class="kop-text">
         <div class="l1">Kementerian Pendidikan Tinggi, Sains, dan Teknologi</div>
         <div class="l2">Universitas Mulawarman</div>

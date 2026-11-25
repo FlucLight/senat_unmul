@@ -88,7 +88,7 @@ class PlaceholderResolver
         $tanggalLabel = '[Tanggal surat]';
         if ($tanggal) {
             try {
-                $tanggalLabel = Carbon::parse($tanggal)->translatedFormat('d F Y');
+                $tanggalLabel = Carbon::parse($tanggal)->locale('id')->translatedFormat('d F Y');
             } catch (\Throwable) {
                 $tanggalLabel = (string) $tanggal;
             }
