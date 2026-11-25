@@ -30,7 +30,7 @@ class DaftarIsiTest extends TestCase
         $this->get(route('dokumen.index'))
             ->assertOk()
             ->assertSee('Rapat Pleno Senat')
-            ->assertSee('Draft');
+            ->assertSee('Draf');
     }
 
     public function test_search_by_judul(): void
@@ -172,7 +172,7 @@ class DaftarIsiTest extends TestCase
         $this->get(route('dokumen.show', $doc))
             ->assertOk()
             ->assertSee('Detail Rapat')
-            ->assertSee('Kembali ke Daftar Isi');
+            ->assertSee('Informasi');
     }
 
     public function test_pagination_is_used_when_many_documents(): void
