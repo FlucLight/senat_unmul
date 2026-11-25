@@ -30,10 +30,17 @@
                 <a href="#verifikasi" class="text-ink transition-colors hover:text-brand">Verifikasi</a>
             </nav>
 
-            <a href="{{ route('login') }}"
-                class="inline-flex h-10 items-center justify-center rounded-md border border-control bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-paper">
-                Masuk
-            </a>
+            @auth
+                <a href="{{ route('beranda') }}"
+                    class="inline-flex h-10 items-center justify-center rounded-md border border-control bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-paper">
+                    Ke Beranda
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                    class="inline-flex h-10 items-center justify-center rounded-md border border-control bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-paper">
+                    Masuk
+                </a>
+            @endauth
         </div>
         <div class="h-0.5 bg-gold-600"></div>
     </header>
@@ -51,8 +58,13 @@
                         Pembuatan, penomoran, dan pemeriksaan keaslian dokumen resmi Senat Fakultas Teknik Universitas Mulawarman.
                     </p>
                     <p class="mt-6 text-sm text-ink-muted">
-                        Pengurus Senat?
-                        <a href="{{ route('login') }}" class="font-semibold text-brand underline-offset-2 hover:underline">Masuk ke sistem</a>
+                        @auth
+                            Anda sudah masuk.
+                            <a href="{{ route('beranda') }}" class="font-semibold text-brand underline-offset-2 hover:underline">Buka beranda</a>
+                        @else
+                            Pengurus Senat?
+                            <a href="{{ route('login') }}" class="font-semibold text-brand underline-offset-2 hover:underline">Masuk ke sistem</a>
+                        @endauth
                     </p>
                 </div>
 
@@ -253,7 +265,13 @@
                 <ul class="mt-3 space-y-2 text-sm">
                     <li><a href="https://www.unmul.ac.id" class="underline-offset-2 hover:underline" rel="noopener">Universitas Mulawarman</a></li>
                     <li><a href="https://ft.unmul.ac.id" class="underline-offset-2 hover:underline" rel="noopener">Fakultas Teknik</a></li>
-                    <li><a href="{{ route('login') }}" class="underline-offset-2 hover:underline">Masuk ke sistem</a></li>
+                    <li>
+                        @auth
+                            <a href="{{ route('beranda') }}" class="underline-offset-2 hover:underline">Buka beranda</a>
+                        @else
+                            <a href="{{ route('login') }}" class="underline-offset-2 hover:underline">Masuk ke sistem</a>
+                        @endauth
+                    </li>
                 </ul>
             </div>
             <div>
