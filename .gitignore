@@ -25,3 +25,16 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Dokumen internal / agent tooling (tidak dipublikasikan)
+AGENTS.md
+CLAUDE.md
+PANDUAN_PENGGUNAAN.md
+PRD_Daftar_Hadir.md
+PRD_Desain_AntiAISlop.md
+PRD_Desain_UI_Sistem_Senat_FT (1).md
+PRD_Halaman_Welcome.md
+PRD_Senat_FT_Fase2_Penutupan_Gap.md
+PRD_Sistem_Senat_FT.md
+/.agents/
+/.claude/
