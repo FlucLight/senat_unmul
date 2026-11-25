@@ -108,4 +108,15 @@
         border: 2px solid var(--color-focus) !important;
         border-radius: 0 !important;
     }
+
+    /* Native modal dialog: tahan scroll halaman di belakang modal + backdrop selaras tema */
+    dialog:modal {
+        overscroll-behavior: contain;
+    }
+    dialog::backdrop {
+        overflow: hidden;
+        overscroll-behavior: contain;
+        background: rgb(28 25 23 / 0.45);
+        backdrop-filter: blur(2px);
+    }
 }

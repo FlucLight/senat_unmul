@@ -88,7 +88,9 @@
                         <x-button type="submit" name="action" value="draft" variant="secondary" class="w-full">Simpan Draf</x-button>
                         <x-button type="submit" name="action" value="preview" variant="secondary" class="w-full">Pratinjau</x-button>
                         <x-button type="submit" name="action" value="final" class="w-full"
-                            onclick="return confirm('Finalisasi dokumen? Setelah final, dokumen mendapat nomor resmi dan tidak dapat diubah atau dihapus.')">
+                            data-confirm="Setelah difinalisasi, dokumen akan mendapatkan nomor resmi dan tidak dapat diubah atau dihapus lagi."
+                            data-confirm-title="Finalisasi Dokumen?"
+                            data-confirm-ok="Finalisasi">
                             Finalisasi
                         </x-button>
                     </div>
@@ -104,14 +106,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const select = document.getElementById('template_key');
     if (!select) return;
     let lastValue = select.value;
-    select.addEventListener('change', function () {
+    select.addEventListener('change', async function () {
         const opt = select.options[select.selectedIndex];
         const body = opt?.dataset?.body || '';
         const ed = window.tinymce?.get('body_html');
         const current = ed ? ed.getContent() : (document.getElementById('body_html')?.value || '');
-        if (current.trim() !== '' && !confirm('Ganti template akan mengganti isi editor. Lanjutkan?')) {
-            select.value = lastValue;
-            return;
+        if (current.trim() !== '') {
+            const ok = await window.appConfirm({
+                title: 'Ganti Template?',
+                message: 'Mengganti template akan menimpa isi editor saat ini. Lanjutkan?',
+                okText: 'Ganti Template',
+            });
+            if (!ok) {
+                select.value = lastValue;
+                return;
+            }
         }
         if (ed) ed.setContent(body); else document.getElementById('body_html').value = body;
         lastValue = select.value;

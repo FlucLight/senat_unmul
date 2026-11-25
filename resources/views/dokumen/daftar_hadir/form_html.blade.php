@@ -67,7 +67,9 @@
                         </div>
                         @if(!empty($generator))
                         <button type="submit" name="action" value="regenerate" class="rounded-md border border-frame-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-surface-muted"
-                            onclick="return confirm('Buat ulang dari data akan menimpa suntingan manual di editor. Lanjutkan?')">Buat Ulang dari Data</button>
+                            data-confirm="Buat ulang dari data akan menimpa suntingan manual di editor. Lanjutkan?"
+                            data-confirm-title="Buat Ulang dari Data"
+                            data-confirm-ok="Ya, Buat Ulang">Buat Ulang dari Data</button>
                         @endif
                     </div>
 
@@ -115,7 +117,10 @@
                         <div class="space-y-2">
                             <x-button type="submit" name="action" value="draft" variant="secondary" class="w-full">Simpan Draf</x-button>
                             <x-button type="submit" name="action" value="preview" variant="secondary" class="w-full">Pratinjau</x-button>
-                            <x-button type="submit" name="action" value="final" class="w-full" onclick="return confirm('Finalisasi dokumen? Setelah final, dokumen mendapat nomor resmi dan tidak dapat diubah atau dihapus.')">Finalisasi</x-button>
+                            <x-button type="submit" name="action" value="final" class="w-full"
+                                data-confirm="Setelah difinalisasi, dokumen akan mendapatkan nomor resmi dan tidak dapat diubah atau dihapus lagi."
+                                data-confirm-title="Finalisasi Dokumen?"
+                                data-confirm-ok="Finalisasi">Finalisasi</x-button>
                         </div>
                     </section>
                 </div>

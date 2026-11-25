@@ -42,7 +42,11 @@
                                         <a href="{{ route('jenis_surat.edit', $item) }}" title="Edit" aria-label="Edit template" class="icon-action">
                                             <x-icon name="pencil-line" class="size-4" />
                                         </a>
-                                        <form action="{{ route('jenis_surat.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus template surat ini? Tindakan ini tidak dapat dibatalkan.')">
+                                        <form action="{{ route('jenis_surat.destroy', $item) }}" method="POST"
+                                            data-confirm="Hapus template surat ini? Tindakan ini tidak dapat dibatalkan."
+                                            data-confirm-title="Hapus Template Surat?"
+                                            data-confirm-ok="Hapus"
+                                            data-confirm-variant="danger">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Hapus" aria-label="Hapus template"

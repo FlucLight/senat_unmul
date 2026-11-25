@@ -39,7 +39,11 @@
                 <div class="flex flex-wrap items-center gap-2">
                     @if ($document->isDraft())
                         <x-button href="{{ route('dokumen.edit', [$document->jenis, $document]) }}" variant="secondary">Ubah Draf</x-button>
-                        <form method="POST" action="{{ route('dokumen.destroy', $document) }}" onsubmit="return confirm('Hapus dokumen draf ini? Tindakan ini tidak dapat dibatalkan.')">
+                        <form method="POST" action="{{ route('dokumen.destroy', $document) }}"
+                            data-confirm="Hapus dokumen draf ini? Tindakan ini tidak dapat dibatalkan."
+                            data-confirm-title="Hapus Dokumen Draf?"
+                            data-confirm-ok="Hapus"
+                            data-confirm-variant="danger">
                             @csrf
                             @method('DELETE')
                             <x-button type="submit" variant="danger-ghost">Hapus</x-button>

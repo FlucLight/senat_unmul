@@ -53,7 +53,11 @@
                                             <a href="{{ route('surat.pdf.download', $item) }}" title="Unduh PDF" aria-label="Unduh PDF" class="icon-action">
                                                 <x-icon name="download" class="size-4" />
                                             </a>
-                                            <form action="{{ route('surat.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus surat ini? Tindakan ini tidak dapat dibatalkan.')">
+                                            <form action="{{ route('surat.destroy', $item) }}" method="POST"
+                                                data-confirm="Hapus surat ini? Tindakan ini tidak dapat dibatalkan."
+                                                data-confirm-title="Hapus Surat?"
+                                                data-confirm-ok="Hapus"
+                                                data-confirm-variant="danger">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" title="Hapus" aria-label="Hapus surat"

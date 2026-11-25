@@ -9,7 +9,11 @@
         <a href="{{ route('dokumen.edit', [$document->jenis, $document]) }}" aria-label="Ubah draf" title="Ubah draf" class="icon-action">
             <x-icon name="pencil-line" class="size-4" />
         </a>
-        <form method="POST" action="{{ route('dokumen.destroy', $document) }}" onsubmit="return confirm('Hapus dokumen draf ini? Tindakan ini tidak dapat dibatalkan.')">
+        <form method="POST" action="{{ route('dokumen.destroy', $document) }}"
+            data-confirm="Hapus dokumen draf ini? Tindakan ini tidak dapat dibatalkan."
+            data-confirm-title="Hapus Dokumen Draf?"
+            data-confirm-ok="Hapus"
+            data-confirm-variant="danger">
             @csrf
             @method('DELETE')
             <button type="submit" aria-label="Hapus draf" title="Hapus draf"

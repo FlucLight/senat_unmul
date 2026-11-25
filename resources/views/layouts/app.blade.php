@@ -192,6 +192,27 @@
             <p>Sistem internal persuratan Senat FT Unmul.</p>
         </div>
     </footer>
+
+    {{-- Modal konfirmasi global selaras tema --}}
+    <dialog id="app-confirm-dialog" aria-labelledby="app-confirm-title" aria-describedby="app-confirm-message" closedby="any"
+        class="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg border border-line bg-surface p-0 text-ink shadow-popover">
+        <div class="p-6">
+            <div class="flex items-start gap-3.5">
+                <div id="app-confirm-icon-wrap" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-brand">
+                    <span id="app-confirm-icon-primary"><x-icon name="shield-check" class="size-5" /></span>
+                    <span id="app-confirm-icon-danger" class="hidden"><x-icon name="triangle-alert" class="size-5" /></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h1 id="app-confirm-title" class="font-serif text-xl font-semibold leading-snug text-ink">Konfirmasi</h1>
+                    <p id="app-confirm-message" class="mt-1.5 text-sm leading-relaxed text-ink-muted"></p>
+                </div>
+            </div>
+        </div>
+        <form method="dialog" class="flex items-center justify-end gap-2 rounded-b-lg border-t border-line bg-paper-200 px-6 py-3.5">
+            <x-button type="submit" value="cancel" variant="secondary" autofocus>Batal</x-button>
+            <x-button type="submit" value="confirm" id="app-confirm-ok">Lanjutkan</x-button>
+        </form>
+    </dialog>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('details.nav-dropdown, #user-menu-dropdown').forEach((dropdown) => {
