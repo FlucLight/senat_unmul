@@ -41,7 +41,7 @@
                     </x-nav-link>
 
                     <x-nav-link :href="route('dokumen.index')" :active="request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show')">
-                        Daftar Isi
+                        Daftar Dokumen
                     </x-nav-link>
 
                     @foreach (\App\Models\Document::JENIS as $key => $label)
@@ -50,12 +50,16 @@
                         </x-nav-link>
                     @endforeach
 
-                    <x-nav-link :href="route('surat.index')" :active="request()->routeIs('surat.*')">
-                        Surat
-                    </x-nav-link>
-                    <x-nav-link :href="route('jenis_surat.index')" :active="request()->routeIs('jenis_surat.*')">
-                        Template Surat
-                    </x-nav-link>
+                    <details class="relative">
+                        <summary class="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-surface-muted">
+                            Pembuat Surat
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </summary>
+                        <div class="absolute left-0 z-50 mt-1 w-44 rounded-md border border-frame bg-surface p-1 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
+                            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Surat</a>
+                            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Template Surat</a>
+                        </div>
+                    </details>
                 </nav>
             </div>
 
@@ -119,7 +123,7 @@
                 Beranda
             </a>
             <a href="{{ route('dokumen.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Daftar Isi
+                Daftar Dokumen
             </a>
 
             <div class="my-3 border-t border-frame"></div>
