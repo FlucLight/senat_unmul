@@ -9,11 +9,11 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
             fonts: [
-                bunny('Inter', {
-                    weights: [400, 500, 600],
+                bunny('Source Serif 4', {
+                    weights: [600],
                 }),
-                bunny('Space Grotesk', {
-                    weights: [500, 600],
+                bunny('Source Sans 3', {
+                    weights: [400, 500, 600],
                 }),
             ],
         }),

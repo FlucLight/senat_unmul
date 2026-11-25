@@ -99,17 +99,17 @@
         content_style: `
             body {
                 font-family: Arial;
-                background: #fff;
+                background: white;
             }
             @media (min-width: 840px) {
                 html {
-                    background: #eceef4;
+                    background: whitesmoke;
                     min-height: 100%;
                     padding: 0 .5rem;
                 }
                 body {
-                    background-color: #fff;
-                    box-shadow: 0 0 4px rgba(0, 0, 0, .15);
+                    background-color: white;
+                    box-shadow: 0 0 4px lightgray;
                     box-sizing: border-box;
                     margin: 1rem auto 0;
                     max-width: 820px;
@@ -136,7 +136,7 @@
                 page-break-before: always;
                 width: 120%;
                 margin-left: -9.6%;
-                background-color: #ECEEF4;
+                background-color: whitesmoke;
             }
         `
     });

@@ -1,24 +1,25 @@
 @props(['fields' => config('senatitor.fields', [])])
 
-<div class="card mt-2 mb-3">
-    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span>
-            <strong>Pratinjau Template</strong>
-            <span class="badge bg-secondary ms-2" id="docx-filename-badge">template-surat.docx</span>
+<div class="mt-3 mb-4 overflow-hidden rounded-md border border-line bg-surface">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
+        <span class="flex items-center gap-2 text-sm">
+            <strong class="font-semibold text-ink">Pratinjau Template</strong>
+            <span class="rounded-sm border border-line-strong bg-paper-200 px-2 py-0.5 text-xs font-medium text-ink-muted" id="docx-filename-badge">template-surat.docx</span>
         </span>
-        <span class="text-muted small">Tampilan dokumen (.docx) — isi dapat diedit langsung</span>
+        <span class="text-xs text-ink-muted">Tampilan dokumen (.docx) — isi dapat diedit langsung</span>
     </div>
-    <div class="card-body p-2" style="background:#e9ecef;">
-        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-            <label class="small mb-0">Jumlah lembar:</label>
-            <input type="number" id="page-count" class="form-control form-control-sm" style="width: 90px;" min="1" max="20" value="1">
-            <button type="button" class="btn btn-sm btn-outline-secondary" id="set-page-count">Atur jumlah lembar</button>
-            <span class="text-muted small">Menambah/menyisakan halaman (kop berulang diatur di opsi "Halaman Lanjutan").</span>
+    <div class="bg-paper-200 p-2">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            <label class="text-sm text-ink">Jumlah lembar:</label>
+            <input type="number" id="page-count" min="1" max="20" value="1"
+                class="tnum h-8 w-24 rounded-md border border-control bg-surface px-2 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-focus">
+            <x-button type="button" variant="secondary" size="sm" id="set-page-count">Atur jumlah lembar</x-button>
+            <span class="text-xs text-ink-muted">Menambah atau menyisakan halaman (kop berulang diatur di opsi Halaman Lanjutan).</span>
         </div>
         <textarea id="template_surat" name="template_surat" {{ $attributes }}>{{ $slot }}</textarea>
     </div>
-    <div class="card-footer text-muted small">
-        Gunakan kode isian: <code>[[NAMA_SURAT]]</code>, <code>[[NOMOR_SURAT]]</code>, <code>[[TANGGAL_SURAT]]</code>, <code>[[logo]]</code>. Gunakan "Halaman Baru" atau "Atur jumlah lembar" untuk menambah halaman.
+    <div class="border-t border-line bg-paper px-4 py-3 text-xs text-ink-muted">
+        Gunakan kode isian: <code class="rounded-sm bg-paper-200 px-1 font-medium text-ink">[[NAMA_SURAT]]</code>, <code class="rounded-sm bg-paper-200 px-1 font-medium text-ink">[[NOMOR_SURAT]]</code>, <code class="rounded-sm bg-paper-200 px-1 font-medium text-ink">[[TANGGAL_SURAT]]</code>, <code class="rounded-sm bg-paper-200 px-1 font-medium text-ink">[[logo]]</code>. Gunakan Halaman Baru atau Atur jumlah lembar untuk menambah halaman.
     </div>
 </div>
 
@@ -104,23 +105,23 @@
                 }
             },
             content_style: `
-                html { background: #e9ecef; padding: 16px; }
+                html { background: whitesmoke; padding: 16px; }
                 body {
                     font-family: "Times New Roman", Times, serif;
                     font-size: 12pt;
                     line-height: 1.4;
-                    background: #fff;
+                    background: white;
                     width: 21cm;
                     min-height: 29.7cm;
                     margin: 0 auto;
                     padding: 3cm 3cm 3cm 4cm;
-                    box-shadow: 0 0 8px rgba(0,0,0,.2);
+                    box-shadow: 0 0 8px lightgray;
                     box-sizing: border-box;
                 }
                 p { margin: 0 0 6pt 0; }
                 table { border-collapse: collapse; }
                 img { max-width: 100%; }
-                .new-break { border-top: 1px dashed #999; margin: 24px 0; page-break-after: always; height: 0; }
+                .new-break { border-top: 1px dashed gray; margin: 24px 0; page-break-after: always; height: 0; }
             `
         });
     })();
