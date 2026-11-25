@@ -90,7 +90,7 @@ class DashboardTest extends TestCase
         $this->actingAsPengurus();
 
         $this->get(route('beranda'))
-            ->assertSee('Daftar Isi')
+            ->assertSee('Daftar Dokumen')
             ->assertSee('Keluar');
     }
 }
