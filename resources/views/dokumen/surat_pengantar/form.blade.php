@@ -31,7 +31,7 @@
                 @method('PUT')
             @endif
 
-            <div class="rounded-lg border border-frame bg-surface p-5 sm:p-6 space-y-4">
+            <div class="rounded-lg border border-frame border-t-[3px] border-t-ink-700 bg-surface p-5 sm:p-6 space-y-4">
                 <h3 class="font-display text-lg font-semibold text-ink-900">Informasi surat pengantar</h3>
                 <div>
                     <label class="block text-xs font-medium text-ink-700">Perihal <span class="text-error-text">*</span></label>

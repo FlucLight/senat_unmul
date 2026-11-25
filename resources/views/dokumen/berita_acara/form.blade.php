@@ -31,7 +31,7 @@
                 @method('PUT')
             @endif
 
-            <div class="rounded-lg border border-frame bg-surface p-5 sm:p-6 space-y-4">
+            <div class="rounded-lg border border-frame border-t-[3px] border-t-gold-600 bg-surface p-5 sm:p-6 space-y-4">
                 <h3 class="font-display text-lg font-semibold text-ink-900">Informasi berita acara</h3>
                 <div>
                     <label class="block text-xs font-medium text-ink-700">Perihal <span class="text-error-text">*</span></label>
@@ -65,17 +65,31 @@
                 </div>
             </div>
 
-            <div class="rounded-lg border border-frame bg-surface p-5 sm:p-6">
-                <h3 class="font-display text-lg font-semibold text-ink-900">Daftar peserta</h3>
-                <p class="mt-0.5 text-xs text-ink-400">Isi nama dan jabatan (5 baris tersedia).</p>
-                <div class="mt-4 space-y-2">
-                    @for ($i = 0; $i < 5; $i++)
-                        @php $row = old("peserta.$i", $content['peserta'][$i] ?? ['nama' => '', 'jabatan_instansi' => '']); @endphp
-                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div class="rounded-lg border border-frame border-t-[3px] border-t-gold-600 bg-surface p-5 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display text-lg font-semibold text-ink-900">Peserta rapat</h3>
+                        <p class="mt-0.5 text-xs text-ink-400">Catat peserta yang hadir beserta jabatan/instansinya.</p>
+                    </div>
+                    <button type="button" id="btn-add-peserta" class="inline-flex items-center gap-1.5 rounded-md border border-frame-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink-900 transition hover:bg-surface-muted">
+                        <svg class="h-3.5 w-3.5 text-gold-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        Tambah
+                    </button>
+                </div>
+                <div id="peserta-rows" class="mt-4 space-y-2">
+                    @php
+                        $rows = old('peserta', $content['peserta'] ?? []);
+                        if (empty($rows)) { $rows = [['nama' => '', 'jabatan_instansi' => '']]; }
+                    @endphp
+                    @foreach ($rows as $i => $row)
+                        <div class="peserta-row grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_auto]">
                             <input type="text" name="peserta[{{ $i }}][nama]" value="{{ $row['nama'] ?? '' }}" placeholder="Nama" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100">
                             <input type="text" name="peserta[{{ $i }}][jabatan_instansi]" value="{{ $row['jabatan_instansi'] ?? '' }}" placeholder="Jabatan / instansi" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100">
+                            <button type="button" class="btn-remove-peserta inline-flex h-9 w-9 items-center justify-center rounded text-ink-400 transition hover:bg-error-bg hover:text-error-text" title="Hapus baris">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                            </button>
                         </div>
-                    @endfor
+                    @endforeach
                 </div>
             </div>
 
@@ -85,4 +99,36 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('peserta-rows');
+            function reindex() {
+                container.querySelectorAll('.peserta-row').forEach((row, i) => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs[0]) inputs[0].name = `peserta[${i}][nama]`;
+                    if (inputs[1]) inputs[1].name = `peserta[${i}][jabatan_instansi]`;
+                });
+            }
+            function addRow(nama = '', jabatan = '') {
+                const i = container.querySelectorAll('.peserta-row').length;
+                const div = document.createElement('div');
+                div.className = 'peserta-row grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_auto]';
+                div.innerHTML = `
+                    <input type="text" name="peserta[${i}][nama]" value="${nama}" placeholder="Nama" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100">
+                    <input type="text" name="peserta[${i}][jabatan_instansi]" value="${jabatan}" placeholder="Jabatan / instansi" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-100">
+                    <button type="button" class="btn-remove-peserta inline-flex h-9 w-9 items-center justify-center rounded text-ink-400 transition hover:bg-error-bg hover:text-error-text" title="Hapus baris">✕</button>
+                `;
+                container.appendChild(div);
+            }
+            document.getElementById('btn-add-peserta')?.addEventListener('click', () => { addRow(); reindex(); });
+            container.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-remove-peserta')) {
+                    e.target.closest('.peserta-row').remove();
+                    if (container.querySelectorAll('.peserta-row').length === 0) addRow();
+                    reindex();
+                }
+            });
+        });
+    </script>
 @endsection
