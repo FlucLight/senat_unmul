@@ -18,7 +18,7 @@
 
     {{-- Top Navigation Bar Horizontal (Gaya Moodle) --}}
     <header class="sticky top-0 z-30 h-[60px] border-b border-frame bg-surface">
-        <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-8">
+        <div class="flex h-full w-full items-center justify-between px-4 sm:px-8">
             {{-- Kiri: Hamburger (mobile) + Brand + Menu Horizontal (desktop) --}}
             <div class="flex h-full items-center gap-4 lg:gap-6">
                 {{-- Hamburger mobile --}}
@@ -35,28 +35,31 @@
                 </a>
 
                 {{-- Navigasi Desktop (teks saja, underline 2px green-700 saat aktif) --}}
+                @php
+                    $routeJenis = [
+                        'undangan' => ['dokumen.undangan.*', 'dokumen.undangan.cetak'],
+                        'berita_acara' => ['dokumen.berita-acara.*', 'dokumen.berita-acara.cetak'],
+                        'surat_pengantar' => ['dokumen.surat-pengantar.*', 'dokumen.surat-pengantar.cetak'],
+                        'daftar_hadir' => ['dokumen.daftar-hadir.*', 'dokumen.cetak'],
+                    ];
+                @endphp
                 <nav class="hidden h-full items-center md:flex">
-                    @if (auth()->user()->role === 'admin')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
-                            Kelola Akun
-                        </x-nav-link>
-                    @endif
                     <x-nav-link :href="route('beranda')" :active="request()->routeIs('beranda')">
                         Beranda
                     </x-nav-link>
 
-                    <x-nav-link :href="route('dokumen.index')" :active="request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show')">
+                    <x-nav-link :href="route('dokumen.index')" :active="request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show') || request()->routeIs('dokumen.edit')">
                         Daftar Dokumen
                     </x-nav-link>
 
                     @foreach (\App\Models\Document::JENIS as $key => $label)
-                        <x-nav-link :href="route('dokumen.baru', $key)" :active="request()->routeIs('dokumen.baru') && request()->route('jenis') === $key">
+                        <x-nav-link :href="route('dokumen.baru', $key)" :active="request()->routeIs($routeJenis[$key] ?? 'dokumen.baru')">
                             {{ $label }}
                         </x-nav-link>
                     @endforeach
 
-                    <details class="relative">
-                        <summary class="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-surface-muted">
+                    <details class="relative h-full">
+                        <summary class="flex h-[60px] cursor-pointer list-none items-center gap-1 border-b-2 px-3 text-sm font-medium transition {{ request()->routeIs('surat.*') || request()->routeIs('jenis_surat.*') ? 'border-green-700 text-green-700' : 'border-transparent text-ink-700 hover:border-frame-strong hover:text-ink-900' }}">
                             Pembuat Surat
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                         </summary>
@@ -94,6 +97,13 @@
                                 {{ auth()->user()->role }}
                             </span>
                         </div>
+                        @if (in_array(auth()->user()->role, ['admin', 'operator']))
+                            <div class="mt-2">
+                                <a href="{{ route('admin.users.index') }}" class="block rounded px-2 py-1.5 text-xs font-medium text-ink-700 hover:bg-surface-muted">
+                                    Kelola Akun
+                                </a>
+                            </div>
+                        @endif
                         <div class="my-3 border-t border-frame"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -148,7 +158,7 @@
                 Template Surat
             </a>
 
-            @if (auth()->user()->role === 'admin')
+            @if (in_array(auth()->user()->role, ['admin', 'operator']))
                 <div class="my-3 border-t border-frame"></div>
                 <p class="px-2 pb-1 text-xs font-medium text-ink-400">Admin</p>
                 <a href="{{ route('admin.users.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('admin.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
@@ -199,7 +209,7 @@
     @endif
 
     {{-- Konten Utama --}}
-    <main class="mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-8">
+    <main class="w-full flex-1 px-4 py-8 sm:px-8">
         @yield('content')
     </main>
 

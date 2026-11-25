@@ -3,7 +3,7 @@
 @section('title', $document ? 'Edit Daftar Hadir' : 'Buat Daftar Hadir')
 
 @section('content')
-    <div class="mx-auto max-w-4xl space-y-6">
+    <div class="w-full space-y-6">
         {{-- Header & Breadcrumb --}}
         <div>
             <a href="{{ route('dokumen.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500 transition hover:text-green-700">

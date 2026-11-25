@@ -3,7 +3,7 @@
 @section('title', 'Kelola Akun Pengurus')
 
 @section('content')
-    <div class="mx-auto max-w-5xl space-y-6">
+    <div class="w-full space-y-6">
         <h2 class="font-display text-[28px] font-semibold leading-tight text-ink-900">Kelola Akun Pengurus</h2>
 
         @if (session('status'))
@@ -20,7 +20,7 @@
                 <input name="email" placeholder="Email (opsional)" type="email" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm">
                 <input name="password" placeholder="Password" type="password" required class="rounded-md border border-frame bg-surface px-3 py-2 text-sm">
                 <select name="role" class="rounded-md border border-frame bg-surface px-3 py-2 text-sm">
-                    <option value="pengurus">pengurus</option>
+                    <option value="operator">operator</option>
                     <option value="admin">admin</option>
                 </select>
                 <label class="flex items-center gap-2 text-sm">

@@ -11,7 +11,7 @@ class AdminUserController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            abort_unless(auth()->check() && auth()->user()->role === 'admin', 403);
+            abort_unless(auth()->check() && in_array(auth()->user()->role, ['admin', 'operator']), 403);
             return $next($request);
         });
     }
@@ -29,9 +29,13 @@ class AdminUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:pengurus,admin'],
+            'role' => ['required', 'in:operator,admin'],
             'is_active' => ['boolean'],
         ]);
+
+        if (auth()->user()->role === 'operator') {
+            $validated['role'] = 'operator';
+        }
 
         User::create([
             'nip' => $validated['nip'],
@@ -50,9 +54,13 @@ class AdminUserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'unique:users,email,' . $user->id],
-            'role' => ['required', 'in:pengurus,admin'],
+            'role' => ['required', 'in:operator,admin'],
             'is_active' => ['boolean'],
         ]);
+
+        if (auth()->user()->role === 'operator') {
+            $validated['role'] = 'operator';
+        }
 
         $user->update([
             'name' => $validated['name'],

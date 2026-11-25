@@ -3,7 +3,7 @@
 @section('title', $document->judul)
 
 @section('content')
-    <div class="mx-auto max-w-3xl space-y-6">
+    <div class="w-full space-y-6">
         <div>
             <a href="{{ route('dokumen.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-ink-500 transition hover:text-green-700">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
