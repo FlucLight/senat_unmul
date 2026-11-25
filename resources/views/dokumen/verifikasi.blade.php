@@ -3,76 +3,114 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verifikasi Dokumen — {{ $document->nomor_surat }}</title>
+    <title>Verifikasi {{ $document->nomor_surat ?? 'Dokumen' }} — Senat FT Unmul</title>
     @vite(['resources/css/app.css'])
 </head>
-<body class="flex min-h-full flex-col items-center justify-center bg-paper px-4 py-12 antialiased">
-    <main class="w-full max-w-lg">
-        <div class="mb-6 text-center">
-            <img src="{{ asset('image.png') }}" alt="Logo Senat Fakultas Teknik" class="mx-auto mb-3 h-14 w-auto object-contain">
-            <h1 class="font-display text-xl font-bold text-ink-900">Senat Fakultas Teknik</h1>
-            <p class="text-xs text-ink-400">Universitas Mulawarman &middot; Portal Verifikasi Dokumen</p>
+<body class="flex min-h-full flex-col bg-paper antialiased">
+    <header class="border-b border-line bg-surface">
+        <div class="mx-auto flex h-[72px] max-w-page items-center gap-3 px-4 md:px-6">
+            <a href="{{ route('welcome') }}" class="flex items-center gap-3">
+                <img src="{{ asset('image.png') }}" alt="" class="h-9 w-auto object-contain">
+                <span class="leading-tight">
+                    <span class="block font-serif text-sm font-semibold text-ink">Senat Fakultas Teknik</span>
+                    <span class="block text-xs text-ink-muted">Universitas Mulawarman</span>
+                </span>
+            </a>
         </div>
+        <div class="h-0.5 bg-gold-600"></div>
+    </header>
 
-        <div class="overflow-hidden rounded-lg border border-frame bg-surface p-6 sm:p-8">
-            {{-- Verified Badge --}}
-            <div class="mb-6 flex items-center gap-3 rounded-md border border-green-700/20 bg-green-50 p-4 text-green-700">
-                <svg class="h-8 w-8 shrink-0 text-green-700" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                </svg>
-                <div>
-                    <h2 class="font-display text-sm font-bold uppercase tracking-wide text-green-700">Dokumen Resmi Terverifikasi</h2>
-                    <p class="text-xs text-green-700/80">Dokumen ini sah dan diterbitkan secara resmi oleh Senat Fakultas Teknik Universitas Mulawarman.</p>
+    <main class="mx-auto w-full max-w-2xl flex-1 px-4 py-8 md:py-12">
+        <h1 class="font-serif text-2xl font-semibold text-ink">Hasil Verifikasi</h1>
+        <p class="mt-1 text-sm text-ink-muted">Pemeriksaan keaslian dokumen resmi Senat FT Unmul.</p>
+
+        @if (($state ?? 'sah') === 'sah')
+            <div class="mt-6 rounded-md border border-line border-l-4 border-l-brand bg-surface p-6">
+                <div class="flex items-start gap-3">
+                    <x-icon name="shield-check" class="size-6 shrink-0 text-brand" />
+                    <div>
+                        <h2 class="font-serif text-xl font-semibold text-ink">Dokumen Sah</h2>
+                        <p class="mt-1 text-sm text-ink-muted">Dokumen ini tercatat dan berstatus final di pangkalan data Senat Fakultas Teknik.</p>
+                    </div>
+                </div>
+
+                <dl class="mt-6 divide-y divide-line text-sm">
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Jenis dokumen</dt>
+                        <dd class="col-span-2 font-medium text-ink">{{ $document->jenis_label }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Nomor</dt>
+                        <dd class="tnum col-span-2 font-medium text-ink">{{ $document->nomor_surat }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Tanggal</dt>
+                        <dd class="tnum col-span-2 text-ink">{{ ($document->finalized_at ?? $document->created_at)->translatedFormat('d F Y') }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Status</dt>
+                        <dd class="col-span-2"><x-status-badge :status="$document->status" /></dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Diterbitkan oleh</dt>
+                        <dd class="col-span-2 text-ink">{{ $document->creator->name }} <span class="tnum text-xs text-ink-muted">(NIP {{ $document->creator->nip }})</span></dd>
+                    </div>
+                </dl>
+
+                <p class="mt-6 border-t border-line pt-4 text-xs leading-relaxed text-ink-muted">
+                    Pemeriksaan ini hanya memastikan dokumen tercatat dan berstatus final. Isi dokumen tidak ditampilkan.
+                    Diperiksa pada {{ now()->translatedFormat('d F Y, H:i') }} WITA.
+                </p>
+            </div>
+        @elseif (($state ?? '') === 'dibatalkan')
+            <div class="mt-6 rounded-md border border-line border-l-4 border-l-line-strong bg-surface p-6">
+                <div class="flex items-start gap-3">
+                    <x-icon name="ban" class="size-6 shrink-0 text-ink-muted" />
+                    <div>
+                        <h2 class="font-serif text-xl font-semibold text-ink">Dokumen Dibatalkan</h2>
+                        <p class="mt-1 text-sm text-ink-muted">Dokumen ini pernah diterbitkan tetapi telah dibatalkan. Hubungi sekretariat untuk keterangan.</p>
+                    </div>
+                </div>
+
+                <dl class="mt-6 divide-y divide-line text-sm">
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Jenis dokumen</dt>
+                        <dd class="col-span-2 font-medium text-ink">{{ $document->jenis_label }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Nomor</dt>
+                        <dd class="tnum col-span-2 font-medium text-ink">{{ $document->nomor_surat }}</dd>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 py-2.5">
+                        <dt class="text-ink-muted">Status</dt>
+                        <dd class="col-span-2"><x-status-badge :status="$document->status" /></dd>
+                    </div>
+                </dl>
+            </div>
+        @else
+            <div class="mt-6 rounded-md border border-line border-l-4 border-l-line-strong bg-surface p-6">
+                <div class="flex items-start gap-3">
+                    <x-icon name="circle-alert" class="size-6 shrink-0 text-ink-muted" />
+                    <div>
+                        <h2 class="font-serif text-xl font-semibold text-ink">Dokumen Tidak Ditemukan</h2>
+                        <p class="mt-1 text-sm text-ink-muted">Periksa kembali kode yang dimasukkan. Draf dan kode yang salah menampilkan pesan yang sama.</p>
+                    </div>
                 </div>
             </div>
+        @endif
 
-            {{-- Metadata Table --}}
-            <dl class="divide-y divide-frame text-xs">
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Nomor Surat</dt>
-                    <dd class="tnum mt-1 font-semibold text-ink-900 sm:col-span-2 sm:mt-0">{{ $document->nomor_surat }}</dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Jenis Dokumen</dt>
-                    <dd class="mt-1 font-medium text-ink-900 sm:col-span-2 sm:mt-0">{{ $document->jenis_label }}</dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Nama Acara</dt>
-                    <dd class="mt-1 font-semibold text-ink-900 sm:col-span-2 sm:mt-0">{{ $content['nama_acara'] ?? $document->judul }}</dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Tanggal Acara</dt>
-                    <dd class="tnum mt-1 text-ink-900 sm:col-span-2 sm:mt-0">
-                        {{ !empty($content['tanggal']) ? \Carbon\Carbon::parse($content['tanggal'])->translatedFormat('l, d F Y') : '—' }}
-                    </dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Waktu & Tempat</dt>
-                    <dd class="mt-1 text-ink-900 sm:col-span-2 sm:mt-0">
-                        {{ $content['waktu_mulai'] ?? '' }} - {{ $content['waktu_selesai'] ?? '' }} &middot; {{ $content['tempat'] ?? '—' }}
-                    </dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Jumlah Peserta</dt>
-                    <dd class="tnum mt-1 font-medium text-ink-900 sm:col-span-2 sm:mt-0">{{ count($content['peserta'] ?? []) }} orang</dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Diterbitkan Oleh</dt>
-                    <dd class="mt-1 text-ink-900 sm:col-span-2 sm:mt-0">
-                        {{ $document->creator->name }} <span class="tnum text-ink-400">(NIP {{ $document->creator->nip }})</span>
-                    </dd>
-                </div>
-                <div class="py-2.5 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="font-medium text-ink-400">Waktu Finalisasi</dt>
-                    <dd class="tnum mt-1 text-ink-900 sm:col-span-2 sm:mt-0">
-                        {{ $document->finalized_at ? $document->finalized_at->translatedFormat('d F Y, H:i') : '—' }} WITA
-                    </dd>
-                </div>
-            </dl>
-        </div>
+        <section class="mt-6 rounded-md border border-line bg-surface p-6">
+            <h2 class="font-serif text-lg font-semibold text-ink">Periksa dokumen lain</h2>
+            <form method="GET" action="{{ route('welcome') }}#verifikasi" class="mt-3 flex flex-col gap-2 sm:flex-row">
+                <label for="nomor_surat" class="sr-only">Nomor surat atau kode verifikasi</label>
+                <input id="nomor_surat" type="text" name="nomor_surat" required placeholder="Masukkan nomor surat"
+                    class="tnum h-11 min-w-0 flex-1 rounded-md border border-control bg-surface px-3 text-base text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-focus">
+                <x-button type="submit" class="shrink-0">Periksa</x-button>
+            </form>
+        </section>
 
-        <p class="mt-6 text-center text-xs text-ink-400">
-            &copy; {{ date('Y') }} Senat Fakultas Teknik, Universitas Mulawarman.
+        <p class="mt-6 text-xs text-ink-muted">
+            <a href="{{ route('welcome') }}" class="font-medium text-brand underline-offset-2 hover:underline">Kembali ke halaman utama</a>
         </p>
     </main>
 </body>

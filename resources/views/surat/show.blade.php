@@ -2,43 +2,28 @@
 
 @section('title', 'Pratinjau Surat')
 
-@push('styles')
-    <style>
-        .pratinjau-surat {
-            background: #fff;
-            box-shadow: 0 1px 4px rgba(34,34,29,.12);
-            margin: 0 auto;
-            max-width: 820px;
-            min-height: 1160px;
-            padding: 4rem;
-            color: #222;
-        }
-        .pratinjau-surat .new-break {
-            border-top: 2px dashed #c7c2b5;
-            margin: 3rem -4rem;
-        }
-    </style>
-@endpush
-
 @section('content')
     <div class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <a href="{{ route('surat.index') }}" class="text-sm font-medium text-green-700 hover:underline">&larr; Kembali</a>
-                <h2 class="mt-2 font-display text-[28px] font-semibold leading-tight text-ink-900">Pratinjau Surat</h2>
-                <p class="mt-1 text-sm text-ink-400">Gunakan Unduh PDF untuk menyimpan file ke perangkat Anda.</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('surat.edit', $surat) }}" class="rounded-md border border-frame-strong bg-surface px-4 py-2 text-sm font-medium text-ink-900 hover:bg-surface-muted">Edit</a>
-                <a href="{{ route('surat.pdf', $surat) }}" target="_blank" class="rounded-md border border-green-700/20 bg-green-100 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-100/70">Lihat PDF</a>
-                <a href="{{ route('surat.pdf.download', $surat) }}" class="rounded-md bg-gold-600 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-500">Unduh PDF</a>
-            </div>
-        </div>
+        <x-breadcrumb :items="[
+            ['label' => 'Beranda', 'url' => route('beranda')],
+            ['label' => 'Daftar Surat', 'url' => route('surat.index')],
+            ['label' => 'Pratinjau Surat'],
+        ]" />
 
-        <div class="overflow-x-auto rounded-lg border border-frame bg-surface-muted p-4 sm:p-8">
-            <div class="pratinjau-surat">
-                {!! $konten !!}
-            </div>
+        <x-page-header title="Pratinjau Surat" description="Gunakan Unduh PDF untuk menyimpan file ke perangkat Anda.">
+            <x-slot:actions>
+                <x-button href="{{ route('surat.edit', $surat) }}" variant="secondary">Edit</x-button>
+                <x-button href="{{ route('surat.pdf', $surat) }}" variant="secondary" target="_blank" rel="noopener">
+                    <x-icon name="printer" class="size-4" /> Lihat PDF
+                </x-button>
+                <x-button href="{{ route('surat.pdf.download', $surat) }}">
+                    <x-icon name="download" class="size-4" /> Unduh PDF
+                </x-button>
+            </x-slot:actions>
+        </x-page-header>
+
+        <div class="overflow-x-auto rounded-md border border-line bg-paper-200 p-4 sm:p-8">
+            <div class="pratinjau-surat">{!! $konten !!}</div>
         </div>
     </div>
 @endsection

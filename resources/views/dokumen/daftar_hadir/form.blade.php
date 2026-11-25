@@ -3,46 +3,42 @@
 @section('title', $document ? 'Edit Daftar Hadir' : 'Buat Daftar Hadir')
 
 @section('content')
-    <div class="w-full space-y-6">
-        {{-- Header & Breadcrumb --}}
-        <div>
-            <a href="{{ route('dokumen.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500 transition hover:text-green-700">
-                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                </svg>
-                Kembali ke Daftar Isi
-            </a>
-            <h2 class="mt-2 font-display text-[28px] font-semibold leading-tight text-ink-900">
-                {{ $document ? 'Edit daftar hadir' : 'Buat daftar hadir baru' }}
-            </h2>
-            <p class="mt-1 text-sm text-ink-400">
-                Formulir terstruktur untuk presensi rapat/acara resmi Senat FT.
-            </p>
-        </div>
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Beranda', 'url' => route('beranda')],
+            ['label' => 'Daftar Dokumen', 'url' => route('dokumen.index')],
+            ['label' => $document ? 'Edit Daftar Hadir' : 'Buat Daftar Hadir'],
+        ]" />
+
+        <x-page-header :title="$document ? 'Edit Daftar Hadir' : 'Buat Daftar Hadir'"
+            description="Formulir presensi rapat atau acara resmi Senat FT dengan penomoran terstruktur." />
 
         @if ($errors->any())
-            <div class="rounded-md border border-error-bg bg-error-bg px-4 py-3 text-sm text-error-text">
-                <p class="font-semibold">Mohon lengkapi isian form berikut:</p>
-                <ul class="mt-1 list-inside list-disc space-y-0.5 text-xs">
+            <x-alert variant="error">
+                <p class="font-semibold">Terdapat {{ $errors->count() }} isian yang perlu diperbaiki.</p>
+                <ul class="mt-1 list-inside list-disc space-y-1 text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
+            </x-alert>
         @endif
 
-        <form id="daftar-hadir-form" method="POST" action="{{ $document ? route('dokumen.daftar-hadir.update', $document) : route('dokumen.daftar-hadir.store') }}" class="space-y-6">
+        <form id="daftar-hadir-form" method="POST" action="{{ $document ? route('dokumen.daftar-hadir.update', $document) : route('dokumen.daftar-hadir.store') }}">
             @csrf
             @if ($document)
                 @method('PUT')
             @endif
 
-            {{-- 1. Bagian Info Acara --}}
-            <div class="rounded-lg border border-frame bg-surface p-5 sm:p-6">
-                <h3 class="font-display text-lg font-semibold text-ink-900">Informasi acara</h3>
-                <p class="mt-0.5 text-xs text-ink-400">Rincian kegiatan yang akan diselenggarakan.</p>
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <div class="space-y-6 lg:col-span-8">
 
-                <div class="mt-5 space-y-4">
+            {{-- 1. Bagian Info Acara --}}
+            <section class="rounded-md border border-line bg-surface p-6">
+                <h2 class="font-serif text-xl font-semibold text-ink">Informasi Acara</h2>
+                <p class="mt-1 text-sm text-ink-muted">Rincian kegiatan yang akan diselenggarakan.</p>
+
+                <div class="mt-6 space-y-4">
                     <div>
                         <label for="nama_acara" class="block text-xs font-medium text-ink-700">
                             Nama acara / rapat <span class="text-error-text">*</span>
@@ -129,15 +125,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             {{-- 2. Bagian Daftar Peserta --}}
-            <div class="rounded-lg border border-frame bg-surface p-5 sm:p-6">
+            <section class="rounded-md border border-line bg-surface p-6">
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h3 class="font-display text-lg font-semibold text-ink-900">Daftar peserta</h3>
-                        <p class="mt-0.5 text-xs text-ink-400">
-                            Nama dan jabatan peserta rapat. Kolom tanda tangan basah akan digenerate di PDF cetak.
+                        <h2 class="font-serif text-xl font-semibold text-ink">Daftar Peserta</h2>
+                        <p class="mt-1 text-sm text-ink-muted">
+                            Nama dan jabatan peserta rapat. Kolom tanda tangan basah digenerate pada PDF cetak.
                         </p>
                     </div>
 
@@ -239,68 +235,60 @@
                         + Tambah Peserta
                     </button>
                 </div>
-            </div>
+            </section>
+            </div>{{-- /kolom form --}}
 
-            {{-- 3. Tombol Aksi Bawah --}}
-            <div class="flex flex-col-reverse items-center justify-end gap-3 pt-2 sm:flex-row">
-                <button
-                    type="submit"
-                    name="action"
-                    value="draft"
-                    class="w-full rounded-md border border-frame-strong bg-surface px-5 py-2.5 text-sm font-medium text-ink-900 transition hover:bg-surface-muted sm:w-auto"
-                >
-                    Simpan Draf
-                </button>
+            {{-- Panel aksi sticky --}}
+            <aside class="lg:col-span-4">
+                <div class="space-y-4 lg:sticky lg:top-24">
+                    <section class="rounded-md border border-line bg-surface p-6">
+                        <h2 class="font-serif text-lg font-semibold text-ink">Status Dokumen</h2>
+                        <div class="mt-3 flex items-center gap-2">
+                            <x-status-badge :status="$document?->status ?? 'draft'" />
+                            <span class="text-sm text-ink-muted">{{ $document ? 'Dokumen tersimpan' : 'Dokumen baru' }}</span>
+                        </div>
+                        <p class="mt-3 text-sm leading-relaxed text-ink-muted">Nomor surat dan QR diberikan otomatis saat finalisasi.</p>
+                    </section>
 
-                <button
-                    type="button"
-                    id="btn-open-finalize"
-                    class="w-full rounded-md bg-gold-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-500 sm:w-auto"
-                >
-                    Finalisasi Dokumen
-                </button>
-            </div>
+                    <section class="rounded-md border border-line bg-surface p-6">
+                        <div class="space-y-2">
+                            <x-button type="submit" name="action" value="draft" variant="secondary" class="w-full">Simpan Draf</x-button>
+                            <x-button type="button" id="btn-open-finalize" class="w-full">Finalisasi</x-button>
+                        </div>
+                        <p class="mt-3 text-xs leading-relaxed text-ink-muted">Finalisasi menerbitkan nomor resmi. Dokumen final tidak dapat diubah atau dihapus.</p>
+                    </section>
+                </div>
+            </aside>
+            </div>{{-- /grid --}}
         </form>
     </div>
 
     {{-- Modal Konfirmasi Finalisasi --}}
-    <div id="finalize-modal-backdrop" class="fixed inset-0 z-50 hidden bg-ink-900/60 backdrop-blur-sm"></div>
-    <div id="finalize-modal" class="fixed inset-x-4 top-1/2 z-50 mx-auto hidden max-w-md -translate-y-1/2 rounded-lg border border-frame bg-surface p-6 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
-        <h3 class="font-display text-lg font-semibold text-ink-900">Konfirmasi finalisasi</h3>
-        <p class="mt-2 text-xs leading-relaxed text-ink-500">
-            Dokumen yang difinalisasi akan otomatis diterbitkan nomor surat resmi dan kode QR verifikasi. <strong>Dokumen yang sudah final tidak dapat diubah atau dihapus kembali.</strong>
+    <div id="finalize-modal-backdrop" class="fixed inset-0 z-50 hidden bg-ink/50"></div>
+    <div id="finalize-modal" role="dialog" aria-modal="true" aria-labelledby="finalize-modal-title" class="fixed inset-x-4 top-1/2 z-50 mx-auto hidden max-w-md -translate-y-1/2 rounded-lg border border-line bg-surface p-6 shadow-popover">
+        <h3 id="finalize-modal-title" class="font-serif text-xl font-semibold text-ink">Finalisasi Dokumen</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink">
+            Setelah difinalisasi, dokumen mendapat nomor resmi dan tidak dapat diubah atau dihapus.
         </p>
 
-        <div class="my-4 rounded-md border border-frame bg-surface-muted p-3.5 text-xs text-ink-700 space-y-1.5">
-            <p><span class="text-ink-400">Acara:</span> <strong id="modal-summary-acara" class="text-ink-900">—</strong></p>
-            <p><span class="text-ink-400">Tanggal:</span> <span id="modal-summary-tanggal" class="tnum">—</span></p>
-            <p><span class="text-ink-400">Tempat:</span> <span id="modal-summary-tempat">—</span></p>
-            <p><span class="text-ink-400">Jumlah Peserta Terisi:</span> <strong id="modal-summary-peserta" class="tnum text-green-700">0</strong> orang</p>
+        <div class="my-4 space-y-1.5 rounded-md border border-line bg-paper-200 p-3.5 text-sm text-ink">
+            <p><span class="text-ink-muted">Acara:</span> <strong id="modal-summary-acara">—</strong></p>
+            <p><span class="text-ink-muted">Tanggal:</span> <span id="modal-summary-tanggal" class="tnum">—</span></p>
+            <p><span class="text-ink-muted">Tempat:</span> <span id="modal-summary-tempat">—</span></p>
+            <p><span class="text-ink-muted">Jumlah peserta terisi:</span> <strong id="modal-summary-peserta" class="tnum text-brand">0</strong> orang</p>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2">
-            <button
-                type="button"
-                id="btn-cancel-finalize"
-                class="rounded-md border border-frame bg-surface px-4 py-2 text-xs font-medium text-ink-700 transition hover:bg-surface-muted"
-            >
-                Batal
-            </button>
-            <button
-                type="button"
-                id="btn-confirm-finalize"
-                class="rounded-md bg-gold-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-gold-500"
-            >
-                Ya, Finalisasi
-            </button>
+            <x-button type="button" id="btn-cancel-finalize" variant="secondary" size="sm">Batal</x-button>
+            <x-button type="button" id="btn-confirm-finalize" size="sm">Finalisasi</x-button>
         </div>
     </div>
 
     {{-- Modal Tempel Cepat Nama & Jabatan Peserta --}}
-    <div id="paste-modal-backdrop" class="fixed inset-0 z-50 hidden bg-ink-900/60 backdrop-blur-sm"></div>
-    <div id="paste-modal" class="fixed inset-x-4 top-1/2 z-50 mx-auto hidden max-w-lg -translate-y-1/2 rounded-lg border border-frame bg-surface p-6 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
-        <h3 class="font-display text-lg font-semibold text-ink-900">Tempel nama &amp; jabatan peserta</h3>
-        <p class="mt-1 text-xs leading-relaxed text-ink-400">
+    <div id="paste-modal-backdrop" class="fixed inset-0 z-50 hidden bg-ink/50"></div>
+    <div id="paste-modal" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title" class="fixed inset-x-4 top-1/2 z-50 mx-auto hidden max-w-lg -translate-y-1/2 rounded-lg border border-line bg-surface p-6 shadow-popover">
+        <h3 id="paste-modal-title" class="font-serif text-xl font-semibold text-ink">Tempel Nama dan Jabatan Peserta</h3>
+        <p class="mt-1 text-sm leading-relaxed text-ink-muted">
             Salin daftar dari WhatsApp atau Excel. Sistem otomatis memisahkan nama dan jabatan berdasarkan pemisah tanda hubung (<code class="font-mono text-ink-700">-</code>), garis tegak (<code class="font-mono text-ink-700">|</code>), titik koma (<code class="font-mono text-ink-700">;</code>), atau tab (<code class="font-mono text-ink-700">Tab</code>).
         </p>
 
@@ -316,20 +304,8 @@
         </div>
 
         <div class="mt-4 flex items-center justify-end gap-2">
-            <button
-                type="button"
-                id="btn-cancel-paste"
-                class="rounded-md border border-frame bg-surface px-4 py-2 text-xs font-medium text-ink-700 hover:bg-surface-muted"
-            >
-                Batal
-            </button>
-            <button
-                type="button"
-                id="btn-apply-paste"
-                class="rounded-md bg-gold-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-gold-500"
-            >
-                Tambahkan ke tabel
-            </button>
+            <x-button type="button" id="btn-cancel-paste" variant="secondary" size="sm">Batal</x-button>
+            <x-button type="button" id="btn-apply-paste" size="sm">Tambahkan ke Tabel</x-button>
         </div>
     </div>
 

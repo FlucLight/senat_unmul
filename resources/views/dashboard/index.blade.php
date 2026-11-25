@@ -3,104 +3,127 @@
 @section('title', 'Beranda')
 
 @section('content')
+    @php
+        $total = collect($stats['per_jenis'])->sum('total');
+        $deskripsi = [
+            'daftar_hadir' => 'Presensi peserta kegiatan resmi.',
+            'undangan' => 'Pemanggilan anggota untuk rapat atau sidang.',
+            'berita_acara' => 'Catatan keputusan dan hasil musyawarah.',
+            'surat_pengantar' => 'Pengiriman berkas kepada Dekan atau Rektorat.',
+        ];
+        $drafts = $recent->where('status', \App\Models\Document::STATUS_DRAFT)->take(5);
+    @endphp
+
     <div class="space-y-8">
-        {{-- Sambutan --}}
-        <div>
-            <p class="text-xs font-medium text-ink-400">Beranda</p>
-            <h2 class="mt-1 font-display text-[28px] font-semibold leading-tight text-ink-900">
-                Halo, {{ auth()->user()->name }}
-            </h2>
-            <p class="mt-1 text-sm text-ink-400">NIP {{ auth()->user()->nip }}, Peran: {{ auth()->user()->role }}</p>
+        <x-breadcrumb :items="[['label' => 'Beranda']]" />
+
+        <div class="flex flex-col gap-2 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <h1 class="font-serif text-2xl font-semibold leading-tight text-ink">Beranda</h1>
+            <p class="text-sm text-ink-muted">Selamat datang, {{ auth()->user()->name }}. {{ now()->translatedFormat('l, d F Y') }}.</p>
         </div>
 
-        {{-- Aksi cepat --}}
-        <div>
-            <h3 class="mb-4 font-display text-xl font-medium text-ink-900">Aksi cepat</h3>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {{-- Buat dokumen --}}
+        <section>
+            <h2 class="font-serif text-xl font-semibold text-ink">Buat Dokumen</h2>
+            <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                 @foreach ($stats['per_jenis'] as $key => $item)
                     <a href="{{ route('dokumen.baru', $key) }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-md bg-gold-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-500">
-                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Buat {{ $item['label'] }}
+                        class="group flex min-h-16 items-center gap-4 rounded-md border border-line bg-surface px-6 py-4 transition-colors hover:bg-paper">
+                        <x-icon :name="match ($key) {
+                            'undangan' => 'mail',
+                            'berita_acara' => 'clipboard-list',
+                            'surat_pengantar' => 'send',
+                            default => 'users',
+                        }" class="size-5 shrink-0 text-brand" />
+                        <span class="min-w-0 flex-1">
+                            <span class="block text-lg font-semibold text-ink">{{ $item['label'] }}</span>
+                            <span class="mt-0.5 block text-sm text-ink-muted">{{ $deskripsi[$key] ?? 'Dokumen resmi Senat FT.' }}</span>
+                        </span>
+                        <x-icon name="arrow-right" class="size-4 shrink-0 text-ink-muted transition-colors group-hover:text-brand" />
                     </a>
                 @endforeach
             </div>
-        </div>
+        </section>
 
-        {{-- Ringkasan dokumen --}}
-        <div>
-            <h3 class="mb-4 font-display text-xl font-medium text-ink-900">Ringkasan dokumen</h3>
-            <div class="grid grid-cols-2 gap-4 lg:grid-cols-7">
-                @foreach ($stats['per_jenis'] as $key => $item)
-                    <div class="rounded-lg border border-frame border-l-[3px] border-l-gold-600 bg-surface p-5">
-                        <p class="tnum font-display text-[32px] font-semibold leading-none text-ink-900">{{ $item['total'] }}</p>
-                        <p class="mt-2 text-xs font-medium text-ink-400">{{ $item['label'] }}</p>
-                    </div>
-                @endforeach
-
-                <div class="rounded-lg border border-frame border-l-[3px] border-l-gold-600 bg-surface p-5">
-                    <p class="tnum font-display text-[32px] font-semibold leading-none text-draft-text">{{ $stats['draft'] }}</p>
-                    <p class="mt-2 text-xs font-medium text-ink-400">Draft (perlu tindak lanjut)</p>
+        {{-- Ringkasan --}}
+        <section>
+            <h2 class="font-serif text-xl font-semibold text-ink">Ringkasan</h2>
+            <div class="mt-4 grid grid-cols-2 divide-line overflow-hidden rounded-md border border-line bg-surface sm:grid-cols-4 sm:divide-x">
+                <div class="p-6">
+                    <p class="tnum font-serif text-2xl font-semibold text-ink">{{ $total }}</p>
+                    <p class="mt-1 text-sm text-ink-muted">Total dokumen</p>
                 </div>
-
-                <div class="rounded-lg border border-frame border-l-[3px] border-l-green-700 bg-surface p-5">
-                    <p class="tnum font-display text-[32px] font-semibold leading-none text-green-700">{{ $stats['final'] }}</p>
-                    <p class="mt-2 text-xs font-medium text-ink-400">Final (bernomor & QR)</p>
-                </div>
-
-                <div class="rounded-lg border border-frame p-5 bg-surface">
-                    <p class="tnum font-display text-[32px] font-semibold leading-none text-ink-900">{{ $stats['bulan_ini'] }}</p>
-                    <p class="mt-2 text-xs font-medium text-ink-400">Bulan ini</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Aktivitas terbaru --}}
-        <div class="overflow-hidden rounded-lg border border-frame bg-surface">
-            <div class="flex items-center justify-between border-b border-frame px-6 py-4">
-                <h3 class="font-display text-xl font-medium text-ink-900">Aktivitas terbaru</h3>
-                <a href="{{ route('dokumen.index') }}" class="text-sm font-medium text-green-700 transition hover:text-green-600 hover:underline">
-                    Lihat semua
+                <a href="{{ route('dokumen.index', ['status' => 'draft']) }}" class="p-6 transition-colors hover:bg-paper">
+                    <p class="tnum font-serif text-2xl font-semibold text-warning-700">{{ $stats['draft'] }}</p>
+                    <p class="mt-1 text-sm text-ink-muted">Draf</p>
                 </a>
-            </div>
-
-            @if ($recent->isEmpty())
-                <div class="px-6 py-16 text-center">
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-surface-muted text-ink-400">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
-                        </svg>
-                    </div>
-                    <p class="mt-4 text-sm font-semibold text-ink-700">Belum ada dokumen</p>
-                    <p class="mt-1 text-sm text-ink-400">Gunakan aksi cepat di atas untuk membuat dokumen pertama.</p>
+                <a href="{{ route('dokumen.index', ['status' => 'final']) }}" class="p-6 transition-colors hover:bg-paper">
+                    <p class="tnum font-serif text-2xl font-semibold text-brand">{{ $stats['final'] }}</p>
+                    <p class="mt-1 text-sm text-ink-muted">Final</p>
+                </a>
+                <div class="p-6">
+                    <p class="tnum font-serif text-2xl font-semibold text-ink">{{ $stats['bulan_ini'] }}</p>
+                    <p class="mt-1 text-sm text-ink-muted">Bulan ini</p>
                 </div>
-            @else
-                <ul class="divide-y divide-frame">
-                    @foreach ($recent as $document)
-                        <li>
-                            <a href="{{ route('dokumen.show', $document) }}" class="flex items-center gap-4 px-6 py-4 transition hover:bg-gold-50">
-                                <span class="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-muted text-ink-400 sm:flex">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
-                                </span>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {{-- Draf belum selesai --}}
+            <section class="rounded-md border border-line bg-surface">
+                <div class="flex items-center justify-between border-b border-line px-6 py-4">
+                    <h2 class="font-serif text-lg font-semibold text-ink">Draf Belum Selesai</h2>
+                    <a href="{{ route('dokumen.index', ['status' => 'draft']) }}" class="text-sm font-semibold text-brand hover:underline">Lihat semua</a>
+                </div>
+
+                @if ($drafts->isEmpty())
+                    <div class="px-6 py-12">
+                        <p class="text-sm text-ink-muted">Tidak ada draf yang menunggu diselesaikan.</p>
+                        <x-button href="{{ route('dokumen.index') }}" variant="secondary" size="sm" class="mt-3">Buka Daftar Dokumen</x-button>
+                    </div>
+                @else
+                    <ul class="divide-y divide-line">
+                        @foreach ($drafts as $document)
+                            <li class="flex items-center gap-3 px-6 py-3">
                                 <div class="min-w-0 flex-1">
-                                    <p class="truncate text-sm font-medium text-ink-900">{{ $document->judul }}</p>
-                                    <p class="mt-0.5 text-xs text-ink-400">
-                                        {{ $document->jenis_label }} — dibuat oleh {{ $document->creator->name }}
+                                    <a href="{{ route('dokumen.show', $document) }}" class="block truncate text-sm font-medium text-ink hover:text-brand">{{ $document->judul }}</a>
+                                    <p class="mt-0.5 text-xs text-ink-muted">{{ $document->jenis_label }} · diubah {{ $document->updated_at->translatedFormat('d M Y, H:i') }}</p>
+                                </div>
+                                <a href="{{ route('dokumen.edit', [$document->jenis, $document]) }}" class="shrink-0 text-sm font-semibold text-brand hover:underline">Lanjutkan</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+
+            {{-- Aktivitas terbaru --}}
+            <section class="rounded-md border border-line bg-surface">
+                <div class="flex items-center justify-between border-b border-line px-6 py-4">
+                    <h2 class="font-serif text-lg font-semibold text-ink">Aktivitas Terbaru</h2>
+                    <a href="{{ route('dokumen.index') }}" class="text-sm font-semibold text-brand hover:underline">Lihat semua</a>
+                </div>
+
+                @if ($recent->isEmpty())
+                    <div class="px-6 py-12">
+                        <p class="text-sm text-ink-muted">Belum ada aktivitas dokumen.</p>
+                        <x-button href="{{ route('dokumen.baru', 'undangan') }}" size="sm" class="mt-3">Buat Dokumen</x-button>
+                    </div>
+                @else
+                    <ul class="divide-y divide-line">
+                        @foreach ($recent as $document)
+                            <li class="flex items-center gap-3 px-6 py-3">
+                                <div class="min-w-0 flex-1">
+                                    <a href="{{ route('dokumen.show', $document) }}" class="block truncate text-sm font-medium text-ink hover:text-brand">{{ $document->judul }}</a>
+                                    <p class="mt-0.5 text-xs text-ink-muted">
+                                        {{ $document->creator->name }} · {{ $document->jenis_label }} · {{ $document->updated_at->translatedFormat('d M Y, H:i') }}
                                     </p>
                                 </div>
-                                <div class="flex shrink-0 items-center gap-3">
-                                    <x-status-badge :status="$document->status" />
-                                    <span class="tnum hidden text-xs text-ink-400 sm:block">{{ $document->created_at->translatedFormat('d M Y') }}</span>
-                                </div>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
+                                <x-status-badge :status="$document->status" class="shrink-0" />
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
         </div>
     </div>
 @endsection

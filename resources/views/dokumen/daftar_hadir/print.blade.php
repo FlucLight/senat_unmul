@@ -15,11 +15,11 @@
                 display: none !important;
             }
             body {
-                background: #ffffff !important;
-                color: #000000 !important;
+                background: white !important;
+                color: black !important;
             }
             .print-border {
-                border-color: #000000 !important;
+                border-color: black !important;
             }
         }
     </style>
@@ -160,7 +160,7 @@
         </div>
 
         {{-- Bagian Tanda Tangan & QR Verifikasi Resmi di Pojok Kanan Bawah --}}
-        <div class="mt-10 flex items-end justify-between break-inside-avoid">
+        <div class="mt-12 flex items-end justify-between break-inside-avoid">
             {{-- Pojok Kiri Bawah: QR Code Verifikasi Keaslian Dokumen --}}
             <div class="flex items-center gap-3">
                 @if ($document->isFinal() && $document->qr_verification_url)
