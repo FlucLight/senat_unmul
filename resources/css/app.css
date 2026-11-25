@@ -76,4 +76,36 @@
         border-top: 2px dashed var(--color-line);
         margin: 3rem -4rem;
     }
+
+    /* Rich editor (TinyMCE) chrome - selaras design system */
+    .tox.tox-tinymce {
+        border: 0 !important;
+        border-radius: 0 !important;
+        font-family: var(--font-sans) !important;
+    }
+    .tox .tox-toolbar__primary,
+    .tox .tox-toolbar-overlord {
+        background: var(--color-paper-200) !important;
+        border-bottom: 1px solid var(--color-line) !important;
+    }
+    .tox .tox-tbtn {
+        border-radius: 4px !important;
+        color: var(--color-ink-700) !important;
+    }
+    .tox .tox-tbtn:hover {
+        background: var(--color-brand-subtle) !important;
+        color: var(--color-brand) !important;
+    }
+    .tox .tox-tbtn--enabled,
+    .tox .tox-tbtn--enabled:hover {
+        background: var(--color-brand-subtle) !important;
+        color: var(--color-brand) !important;
+    }
+    .tox .tox-tbtn svg {
+        fill: currentColor !important;
+    }
+    .tox .tox-edit-area::before {
+        border: 2px solid var(--color-focus) !important;
+        border-radius: 0 !important;
+    }
 }
