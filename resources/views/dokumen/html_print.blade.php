@@ -8,6 +8,8 @@
         body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #111; margin: 0; }
         p { margin: 0 0 6pt 0; }
         table { width: 100%; border-collapse: collapse; }
+        thead { display: table-header-group; }
+        tr { break-inside: avoid; page-break-inside: avoid; }
         th, td { vertical-align: top; }
         .kop { border-bottom: 3px double #111; padding-bottom: 8px; margin-bottom: 18px; }
         .kop td { vertical-align: middle; }
@@ -20,7 +22,8 @@
         .kop-text .l4 { font-size: 9pt; margin-top: 2px; }
         .document-body { font-size: 12pt; line-height: 1.5; }
         .document-body table { width: 100%; border-collapse: collapse; }
-        .document-body th, .document-body td { padding: 3px 4px; }
+        .document-body th, .document-body td { padding: 4px 6px; }
+        .document-body table[data-table="peserta"] tbody td { height: 10mm; }
         .page-break { page-break-after: always; break-after: page; height: 0; margin: 0; border: 0; }
         .ph[data-ph="qr_verifikasi"] { display: block; margin-top: 12pt; }
         .no-print { margin-bottom: 12px; font-family: Arial, sans-serif; font-size: 12px; }
