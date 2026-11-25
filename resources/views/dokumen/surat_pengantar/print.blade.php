@@ -11,5 +11,11 @@
         <p class="text-sm">Tujuan: {{ $content['tujuan'] ?? '' }}</p>
         <p class="mt-4 text-sm">{{ $content['isi_ringkas'] ?? '' }}</p>
         <p class="mt-6 text-sm">Penandatangan: {{ $content['penandatangan'] ?? '' }}</p>
+        @if (!empty($qrDataUri))
+            <div class="mt-6 text-center">
+                <img src="{{ $qrDataUri }}" alt="QR Verifikasi" class="mx-auto h-24 w-24">
+                <p class="mt-1 text-xs text-ink-400">Pindai untuk verifikasi keaslian</p>
+            </div>
+        @endif
     </div>
 @endsection

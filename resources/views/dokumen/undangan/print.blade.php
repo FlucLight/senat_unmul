@@ -19,5 +19,11 @@
                 <li>{{ $u['nama'] ?? '' }} — {{ $u['jabatan_instansi'] ?? '' }}</li>
             @endforeach
         </ol>
+        @if (!empty($qrDataUri))
+            <div class="mt-6 text-center">
+                <img src="{{ $qrDataUri }}" alt="QR Verifikasi" class="mx-auto h-24 w-24">
+                <p class="mt-1 text-xs text-ink-400">Pindai untuk verifikasi keaslian</p>
+            </div>
+        @endif
     </div>
 @endsection

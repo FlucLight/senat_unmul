@@ -194,6 +194,7 @@ class DaftarHadirController extends Controller
         return view('dokumen.daftar_hadir.print', [
             'document' => $document,
             'content' => (array) $document->content,
+            'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url ?? route('dokumen.verifikasi', $document->id)),
         ]);
     }
 
