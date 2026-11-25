@@ -147,6 +147,14 @@
             <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
                 Template Surat
             </a>
+
+            @if (auth()->user()->role === 'admin')
+                <div class="my-3 border-t border-frame"></div>
+                <p class="px-2 pb-1 text-xs font-medium text-ink-400">Admin</p>
+                <a href="{{ route('admin.users.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('admin.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                    Kelola Akun
+                </a>
+            @endif
         </nav>
 
         <div class="border-t border-frame p-4">
