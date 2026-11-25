@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/rich-editor.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/rich-editor.js', 'resources/js/daftar-hadir-table.js'],
             refresh: true,
             fonts: [
                 bunny('Source Serif 4', {
