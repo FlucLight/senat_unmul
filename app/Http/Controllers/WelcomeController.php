@@ -9,9 +9,7 @@ class WelcomeController extends Controller
 {
     public function index(Request $request)
     {
-        if (auth()->check()) {
-            return redirect()->route('beranda');
-        }
+        // Izinkan pengguna yang sudah masuk tetap membuka halaman welcome.
 
         $searchQuery = trim($request->query('nomor_surat', ''));
         $searchResult = null;

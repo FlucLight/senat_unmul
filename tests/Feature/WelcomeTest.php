@@ -26,12 +26,13 @@ class WelcomeTest extends TestCase
         $response->assertSee('Alur Penerbitan');
     }
 
-    public function test_authenticated_user_is_redirected_to_beranda(): void
+    public function test_authenticated_user_can_access_welcome_page(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('welcome'))
-            ->assertRedirect(route('beranda'));
+            ->assertOk()
+            ->assertSee('Sistem Manajemen');
     }
 
     public function test_public_can_verify_valid_nomor_surat_on_welcome_page(): void
