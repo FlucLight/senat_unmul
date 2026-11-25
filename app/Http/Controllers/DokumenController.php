@@ -68,6 +68,16 @@ class DokumenController extends Controller
             return Storage::disk('public')->download($document->pdf_path);
         }
 
+        // Generate PDF on-the-fly via DomPDF (Fase 2)
+        $view = 'dokumen.' . $document->jenis . '.print';
+        if (view()->exists($view)) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, [
+                'document' => $document,
+                'content' => (array) $document->content,
+            ]);
+            return $pdf->download('dokumen-' . $document->id . '.pdf');
+        }
+
         if (in_array($document->jenis, ['daftar_hadir', 'undangan', 'berita_acara', 'surat_pengantar'])) {
             $routeName = $document->jenis === 'daftar_hadir'
                 ? 'dokumen.cetak'
