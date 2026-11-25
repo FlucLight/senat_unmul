@@ -68,14 +68,26 @@ class DokumenController extends Controller
             return Storage::disk('public')->download($document->pdf_path);
         }
 
-        // Generate PDF on-the-fly via DomPDF (Fase 2)
+        // Generate PDF on-the-fly via DomPDF
         $view = 'dokumen.' . $document->jenis . '.print';
         if (view()->exists($view)) {
+            $qrDataUri = null;
+            if ($document->qr_verification_url) {
+                try {
+                    $qrDataUri = app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url);
+                } catch (\Throwable $e) {
+                    $qrDataUri = null;
+                }
+            }
+
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, [
-                'document' => $document,
+                'document' => $document->loadMissing('creator'),
                 'content' => (array) $document->content,
-            ]);
-            return $pdf->download('dokumen-' . $document->id . '.pdf');
+                'qrDataUri' => $qrDataUri,
+            ])->setPaper('a4');
+
+            $filename = str_replace(['/', '\\'], '-', $document->nomor_surat ?: 'dokumen-' . $document->id) . '.pdf';
+            return $pdf->download($filename);
         }
 
         if (in_array($document->jenis, ['daftar_hadir', 'undangan', 'berita_acara', 'surat_pengantar'])) {
