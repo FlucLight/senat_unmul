@@ -53,6 +53,7 @@ class DokumenController extends Controller
 
     public function destroy(Document $document)
     {
+        $this->authorize('delete', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat dihapus.');
 
         $document->delete();

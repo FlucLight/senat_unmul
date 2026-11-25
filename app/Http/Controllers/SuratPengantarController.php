@@ -30,6 +30,7 @@ class SuratPengantarController extends Controller
     public function edit(Document $document)
     {
         abort_unless($document->jenis === 'surat_pengantar', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
         return $this->renderHtmlEdit($document, 'surat_pengantar', 'dokumen.surat_pengantar.form', 'dokumen.surat_pengantar.form_legacy');
@@ -38,6 +39,7 @@ class SuratPengantarController extends Controller
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'surat_pengantar', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
 
         if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {

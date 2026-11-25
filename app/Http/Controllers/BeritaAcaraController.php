@@ -30,6 +30,7 @@ class BeritaAcaraController extends Controller
     public function edit(Document $document)
     {
         abort_unless($document->jenis === 'berita_acara', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
         return $this->renderHtmlEdit($document, 'berita_acara', 'dokumen.berita_acara.form', 'dokumen.berita_acara.form_legacy');
@@ -38,6 +39,7 @@ class BeritaAcaraController extends Controller
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'berita_acara', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
 
         if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {

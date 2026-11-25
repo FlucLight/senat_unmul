@@ -49,6 +49,7 @@ class DaftarHadirController extends Controller
     public function edit(Document $document)
     {
         abort_unless($document->jenis === 'daftar_hadir', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diedit.');
 
         $content = (array) $document->content;
@@ -90,6 +91,7 @@ class DaftarHadirController extends Controller
     public function update(Request $request, Document $document)
     {
         abort_unless($document->jenis === 'daftar_hadir', 404);
+        $this->authorize('update', $document);
         abort_if($document->isFinal(), 403, 'Dokumen final tidak dapat diubah.');
 
         if ($request->input('form_mode') === 'html' || (($document->content['format'] ?? null) === 'html')) {
