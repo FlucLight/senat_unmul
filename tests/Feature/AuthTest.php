@@ -90,7 +90,7 @@ class AuthTest extends TestCase
 
         $this->actingAs($user)->get(route('login'))->assertRedirect('/');
 
-        $this->actingAs($user)->get('/')->assertRedirect(route('beranda'));
+        $this->actingAs($user)->get('/')->assertOk();
     }
 
     public function test_logout_signs_user_out(): void

@@ -4,51 +4,62 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="font-display text-[28px] font-semibold leading-tight text-ink-900">Daftar surat</h2>
-                <p class="mt-1 text-sm text-ink-400">Buat surat dari template, lalu pratinjau, unduh, atau cetak ke PDF.</p>
-            </div>
-            <a href="{{ route('surat.create') }}" class="inline-flex items-center justify-center rounded-md bg-gold-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-500">
-                Buat Surat Baru
-            </a>
-        </div>
+        <x-breadcrumb :items="[['label' => 'Beranda', 'url' => route('beranda')], ['label' => 'Daftar Surat']]" />
+
+        <x-page-header title="Daftar Surat" description="Buat surat dari template, lalu pratinjau, unduh, atau cetak ke PDF.">
+            <x-slot:actions>
+                <x-button href="{{ route('surat.create') }}">
+                    <x-icon name="plus" class="size-4" /> Buat Surat Baru
+                </x-button>
+            </x-slot:actions>
+        </x-page-header>
 
         @if ($surat->isEmpty())
-            <div class="rounded-lg border border-frame bg-surface px-6 py-16 text-center">
-                <p class="text-sm font-semibold text-ink-700">Belum ada surat.</p>
-                <p class="mt-1 text-sm text-ink-400">Buat surat baru dari template yang tersedia.</p>
-            </div>
+            <x-empty-state icon="mail" title="Belum ada surat" description="Buat surat baru dari template yang tersedia.">
+                <x-button href="{{ route('surat.create') }}" size="sm">Buat Surat Baru</x-button>
+            </x-empty-state>
         @else
-            <div class="hidden overflow-hidden rounded-lg border border-frame bg-surface md:block">
+            <div class="hidden overflow-hidden rounded-md border border-line bg-surface md:block">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-frame text-sm">
-                        <thead>
-                            <tr class="bg-surface-muted text-left text-xs font-medium text-ink-700">
-                                <th class="px-5 py-3">No</th>
-                                <th class="px-5 py-3">Nomor Surat</th>
-                                <th class="px-5 py-3">Jenis Surat</th>
-                                <th class="tnum px-5 py-3 text-right">Tanggal</th>
-                                <th class="px-5 py-3 text-right">Aksi</th>
+                    <table class="w-full text-left text-sm">
+                        <caption class="sr-only">Daftar surat yang telah dibuat</caption>
+                        <thead class="border-b border-line-strong bg-paper-200 text-xs font-semibold text-ink-muted">
+                            <tr>
+                                <th scope="col" class="px-4 py-3">No</th>
+                                <th scope="col" class="px-4 py-3">Nomor Surat</th>
+                                <th scope="col" class="px-4 py-3">Jenis Surat</th>
+                                <th scope="col" class="px-4 py-3 text-right">Tanggal</th>
+                                <th scope="col" class="px-4 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-frame">
+                        <tbody class="divide-y divide-line">
                             @foreach ($surat as $item)
-                                <tr class="transition hover:bg-gold-50">
-                                    <td class="px-5 py-3.5 text-ink-400">{{ $loop->iteration }}</td>
-                                    <td class="px-5 py-3.5 font-medium text-ink-900">{{ $item->nomor_surat }}</td>
-                                    <td class="px-5 py-3.5 text-ink-700">{{ $item->jenisSurat->nama_surat }}</td>
-                                    <td class="tnum whitespace-nowrap px-5 py-3.5 text-right text-ink-400">{{ $item->tanggal_surat->format('d-m-Y') }}</td>
-                                    <td class="px-5 py-3.5">
-                                        <div class="flex justify-end gap-2">
-                                            <a href="{{ route('surat.show', $item) }}" class="rounded-md border border-frame-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink-900 hover:bg-surface-muted">Detail</a>
-                                            <a href="{{ route('surat.edit', $item) }}" class="rounded-md border border-frame-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink-900 hover:bg-surface-muted">Edit</a>
-                                            <a href="{{ route('surat.pdf', $item) }}" target="_blank" class="rounded-md border border-green-700/20 bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100/70">Lihat PDF</a>
-                                            <a href="{{ route('surat.pdf.download', $item) }}" class="rounded-md bg-gold-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-gold-500">Unduh PDF</a>
-                                            <form action="{{ route('surat.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?')">
+                                <tr class="transition-colors hover:bg-paper">
+                                    <td class="tnum px-4 py-3 text-ink-muted">{{ $loop->iteration }}</td>
+                                    <td class="tnum px-4 py-3 font-medium text-ink">{{ $item->nomor_surat }}</td>
+                                    <td class="px-4 py-3 text-ink-muted">{{ $item->jenisSurat->nama_surat }}</td>
+                                    <td class="tnum whitespace-nowrap px-4 py-3 text-right text-ink-muted">{{ $item->tanggal_surat->format('d-m-Y') }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <a href="{{ route('surat.show', $item) }}" title="Detail" aria-label="Detail surat" class="icon-action">
+                                                <x-icon name="file-text" class="size-4" />
+                                            </a>
+                                            <a href="{{ route('surat.edit', $item) }}" title="Edit" aria-label="Edit surat" class="icon-action">
+                                                <x-icon name="pencil-line" class="size-4" />
+                                            </a>
+                                            <a href="{{ route('surat.pdf', $item) }}" target="_blank" rel="noopener" title="Lihat PDF" aria-label="Lihat PDF" class="icon-action">
+                                                <x-icon name="printer" class="size-4" />
+                                            </a>
+                                            <a href="{{ route('surat.pdf.download', $item) }}" title="Unduh PDF" aria-label="Unduh PDF" class="icon-action">
+                                                <x-icon name="download" class="size-4" />
+                                            </a>
+                                            <form action="{{ route('surat.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus surat ini? Tindakan ini tidak dapat dibatalkan.')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="rounded-md border border-error-bg bg-error-bg px-3 py-1.5 text-xs font-medium text-error-text hover:opacity-90">Hapus</button>
+                                                <button type="submit" title="Hapus" aria-label="Hapus surat"
+                                                    class="inline-flex h-8 w-8 items-center justify-center rounded-sm text-ink-muted transition-colors hover:bg-danger-50 hover:text-danger-700">
+                                                    <x-icon name="trash-2" class="size-4" />
+                                                </button>
                                             </form>
                                         </div>
                                     </td>
@@ -61,16 +72,16 @@
 
             <div class="space-y-4 md:hidden">
                 @foreach ($surat as $item)
-                    <div class="rounded-lg border border-frame bg-surface p-4">
-                        <p class="text-sm font-semibold text-ink-900">{{ $item->nomor_surat }}</p>
-                        <p class="text-xs text-ink-500">{{ $item->jenisSurat->nama_surat }}</p>
-                        <p class="tnum mt-1 text-xs text-ink-400">{{ $item->tanggal_surat->format('d-m-Y') }}</p>
+                    <section class="rounded-md border border-line bg-surface p-4">
+                        <p class="tnum text-sm font-semibold text-ink">{{ $item->nomor_surat }}</p>
+                        <p class="text-sm text-ink-muted">{{ $item->jenisSurat->nama_surat }}</p>
+                        <p class="tnum mt-1 text-xs text-ink-muted">{{ $item->tanggal_surat->format('d-m-Y') }}</p>
                         <div class="mt-3 flex flex-wrap gap-2">
-                            <a href="{{ route('surat.show', $item) }}" class="rounded-md border border-frame-strong px-3 py-1.5 text-xs font-medium text-ink-900">Detail</a>
-                            <a href="{{ route('surat.edit', $item) }}" class="rounded-md border border-frame-strong px-3 py-1.5 text-xs font-medium text-ink-900">Edit</a>
-                            <a href="{{ route('surat.pdf.download', $item) }}" class="rounded-md bg-gold-600 px-3 py-1.5 text-xs font-medium text-white">Unduh PDF</a>
+                            <x-button href="{{ route('surat.show', $item) }}" variant="secondary" size="sm">Detail</x-button>
+                            <x-button href="{{ route('surat.edit', $item) }}" variant="secondary" size="sm">Edit</x-button>
+                            <x-button href="{{ route('surat.pdf.download', $item) }}" size="sm">Unduh PDF</x-button>
                         </div>
-                    </div>
+                    </section>
                 @endforeach
             </div>
         @endif

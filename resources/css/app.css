@@ -1,66 +1,79 @@
 @import 'tailwindcss';
+@import './tokens.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-@theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-
-    /* Brand */
-    --color-gold-600: #b8860b;
-    --color-gold-500: #c79515;
-    --color-gold-100: #f5ebd0;
-    --color-gold-50: #fbf7ea;
-
-    --color-green-700: #2f5d45;
-    --color-green-600: #3a7257;
-    --color-green-100: #e1ede5;
-    --color-green-50: #f2f7f3;
-
-    /* Neutral */
-    --color-paper: #faf9f6;
-    --color-surface: #ffffff;
-    --color-surface-muted: #f1efe8;
-    --color-ink-900: #22221d;
-    --color-ink-700: #4a4a42;
-    --color-ink-500: #6a6a60;
-    --color-ink-400: #8b8b80;
-    --color-frame: #dedad0;
-    --color-frame-strong: #c7c2b5;
-
-    /* Semantic */
-    --color-draft-text: #8a6512;
-    --color-error-bg: #f7e5e1;
-    --color-error-text: #a23b2c;
-}
-
 @layer base {
     html {
-        scroll-behavior: smooth;
+        color-scheme: light;
+        font-family: var(--font-sans);
+        background-color: var(--color-paper);
+        color: var(--color-ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
     }
 
     body {
         font-family: var(--font-sans);
-        color: var(--color-ink-700);
         background-color: var(--color-paper);
-        -webkit-font-smoothing: antialiased;
+        color: var(--color-ink);
     }
 
-    h1, h2, h3 {
-        font-family: var(--font-display);
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        color: var(--color-ink);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
     }
 }
 
 @layer components {
-    /* Tabular figures untuk kolom angka/tanggal/nomor surat */
+    /* Angka tabular untuk nomor surat, tanggal, dan statistik */
     .tnum {
         font-variant-numeric: tabular-nums;
         font-feature-settings: 'tnum';
     }
 
-    /* Aksi ikon halus di dalam tabel */
+    /* Aksi ikon kecil di dalam tabel */
     .icon-action {
-        @apply inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-400 transition hover:bg-gold-100 hover:text-gold-600;
+        @apply inline-flex h-8 w-8 items-center justify-center rounded-sm text-ink-muted transition-colors hover:bg-brand-subtle hover:text-brand;
+    }
+
+    /* Cincin fokus yang konsisten */
+    .focus-ring {
+        @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus;
+    }
+
+    /* Lembar pratinjau surat/template (elemen melayang) */
+    .pratinjau-surat {
+        background: var(--color-surface);
+        box-shadow: var(--shadow-popover);
+        margin: 0 auto;
+        max-width: 820px;
+        min-height: 1160px;
+        padding: 4rem;
+        color: var(--color-ink);
+    }
+
+    .pratinjau-surat .new-break {
+        border-top: 2px dashed var(--color-line);
+        margin: 3rem -4rem;
     }
 }

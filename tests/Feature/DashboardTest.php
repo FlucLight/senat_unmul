@@ -27,7 +27,7 @@ class DashboardTest extends TestCase
 
         $this->actingAs($user)->get(route('beranda'))
             ->assertOk()
-            ->assertSee('Halo, Prof. Andi')
+            ->assertSee('Selamat datang, Prof. Andi')
             ->assertSee($user->nip);
     }
 
@@ -36,10 +36,10 @@ class DashboardTest extends TestCase
         $this->actingAsPengurus();
 
         $this->get(route('beranda'))
-            ->assertSee('Buat Undangan')
-            ->assertSee('Buat Berita Acara')
-            ->assertSee('Buat Surat Pengantar')
-            ->assertSee('Buat Daftar Hadir');
+            ->assertSee('Undangan')
+            ->assertSee('Berita Acara')
+            ->assertSee('Surat Pengantar')
+            ->assertSee('Daftar Hadir');
     }
 
     public function test_dashboard_statistics_match_real_counts(): void
@@ -54,7 +54,7 @@ class DashboardTest extends TestCase
             ->assertSee('Undangan')
             ->assertSee('Berita Acara')
             ->assertSee('Surat Pengantar')
-            ->assertSee('Draft')
+            ->assertSee('Draf')
             ->assertSee('Final');
 
         $this->assertSame(2, Document::where('status', 'draft')->count());
@@ -82,7 +82,7 @@ class DashboardTest extends TestCase
 
         $this->get(route('beranda'))
             ->assertOk()
-            ->assertSee('Belum ada dokumen');
+            ->assertSee('Belum ada aktivitas dokumen');
     }
 
     public function test_dashboard_has_logout_and_navigation_links(): void

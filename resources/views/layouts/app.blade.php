@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistem Senat Fakultas Teknik')</title>
+    <title>@yield('title', 'Sistem Senat Fakultas Teknik') — Senat FT Unmul</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -14,199 +14,203 @@
         $initials = count($nameParts) >= 2
             ? strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1))
             : strtoupper(substr($nameParts[0] ?? 'U', 0, 2));
+
+        $isOperator = (auth()->user()->role ?? null) === 'operator';
+        $buatAktif = request()->routeIs('dokumen.baru')
+            || request()->routeIs('dokumen.undangan.*')
+            || request()->routeIs('dokumen.berita-acara.*')
+            || request()->routeIs('dokumen.surat-pengantar.*')
+            || request()->routeIs('dokumen.daftar-hadir.*');
+        $suratAktif = request()->routeIs('surat.*') || request()->routeIs('jenis_surat.*');
+        $dokumenAktif = request()->routeIs('dokumen.index')
+            || request()->routeIs('dokumen.show')
+            || request()->routeIs('dokumen.edit');
     @endphp
 
-    {{-- Top Navigation Bar Horizontal (Gaya Moodle) --}}
-    <header class="sticky top-0 z-30 h-[60px] border-b border-frame bg-surface">
-        <div class="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-8">
-            {{-- Kiri: Hamburger (mobile) + Brand + Menu Horizontal (desktop) --}}
-            <div class="flex h-full items-center gap-4 lg:gap-6">
-                {{-- Hamburger mobile --}}
-                <button id="mobile-menu-toggle" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-700 hover:bg-surface-muted md:hidden" aria-label="Buka menu navigasi">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
+    <a href="#konten" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand focus:shadow-popover">
+        Lompat ke konten
+    </a>
+
+    <header class="sticky top-0 z-30 border-b border-line bg-surface">
+        <div class="mx-auto flex h-16 max-w-page items-center justify-between gap-4 px-4 md:px-6">
+            {{-- Kiri: brand + navigasi --}}
+            <div class="flex h-full min-w-0 items-center gap-3 lg:gap-4">
+                <button id="mobile-menu-toggle" type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-paper hover:text-ink lg:hidden"
+                    aria-label="Buka menu navigasi" aria-controls="mobile-drawer" aria-expanded="false">
+                    <x-icon name="menu" class="size-5" />
                 </button>
 
-                {{-- Logo / Nama Sistem --}}
-                <a href="{{ route('beranda') }}" class="flex items-center gap-2.5">
-                    <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-8 w-auto object-contain">
-                    <span class="font-display text-base font-semibold text-ink-900">Senat FT</span>
+                <a href="{{ route('welcome') }}" class="flex shrink-0 items-center gap-2.5">
+                    <img src="{{ asset('image.png') }}" alt="" class="h-8 w-auto object-contain">
+                    <span class="font-serif text-lg font-semibold leading-none text-ink">Senat FT Unmul</span>
                 </a>
 
-                {{-- Navigasi Desktop (teks saja, underline 2px green-700 saat aktif) --}}
-                <nav class="hidden h-full items-center md:flex">
-                    @if (auth()->user()->role === 'admin')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
-                            Kelola Akun
-                        </x-nav-link>
-                    @endif
-                    <x-nav-link :href="route('beranda')" :active="request()->routeIs('beranda')">
-                        Beranda
-                    </x-nav-link>
+                <nav aria-label="Navigasi utama" class="hidden h-full items-center lg:flex">
+                    <x-nav-link :href="route('beranda')" :active="request()->routeIs('beranda')">Beranda</x-nav-link>
+                    <x-nav-link :href="route('dokumen.index')" :active="$dokumenAktif">Daftar Dokumen</x-nav-link>
 
-                    <x-nav-link :href="route('dokumen.index')" :active="request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show')">
-                        Daftar Dokumen
-                    </x-nav-link>
-
-                    @foreach (\App\Models\Document::JENIS as $key => $label)
-                        <x-nav-link :href="route('dokumen.baru', $key)" :active="request()->routeIs('dokumen.baru') && request()->route('jenis') === $key">
-                            {{ $label }}
-                        </x-nav-link>
-                    @endforeach
-
-                    <details class="relative">
-                        <summary class="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-surface-muted">
-                            Pembuat Surat
-                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    <details class="relative h-full nav-dropdown">
+                        <summary class="flex h-16 cursor-pointer list-none items-center gap-1 border-b-2 px-3 text-sm transition-colors {{ $buatAktif ? 'border-brand font-semibold text-brand-hover' : 'border-transparent font-medium text-ink hover:border-line-strong hover:bg-paper' }}">
+                            Buat Dokumen
+                            <x-icon name="chevron-down" class="size-3.5" />
                         </summary>
-                        <div class="absolute left-0 z-50 mt-1 w-44 rounded-md border border-frame bg-surface p-1 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
-                            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Surat</a>
-                            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Template Surat</a>
+                        <div class="absolute left-0 z-50 mt-0 w-56 rounded-lg border border-line bg-surface p-1 shadow-popover">
+                            @foreach (\App\Models\Document::JENIS as $key => $label)
+                                <a href="{{ route('dokumen.baru', $key) }}"
+                                    class="block rounded-sm px-3 py-2.5 text-sm {{ request()->routeIs('dokumen.baru') && request()->route('jenis') === $key ? 'border-l-2 border-brand bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">
+                                    {{ $label }}
+                                </a>
+                            @endforeach
                         </div>
                     </details>
+
+                    <details class="relative h-full nav-dropdown">
+                        <summary class="flex h-16 cursor-pointer list-none items-center gap-1 border-b-2 px-3 text-sm transition-colors {{ $suratAktif ? 'border-brand font-semibold text-brand-hover' : 'border-transparent font-medium text-ink hover:border-line-strong hover:bg-paper' }}">
+                            Pembuat Surat
+                            <x-icon name="chevron-down" class="size-3.5" />
+                        </summary>
+                        <div class="absolute left-0 z-50 mt-0 w-56 rounded-lg border border-line bg-surface p-1 shadow-popover">
+                            <a href="{{ route('surat.index') }}" class="block rounded-sm px-3 py-2.5 text-sm {{ request()->routeIs('surat.*') ? 'border-l-2 border-brand bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Surat</a>
+                            <a href="{{ route('jenis_surat.index') }}" class="block rounded-sm px-3 py-2.5 text-sm {{ request()->routeIs('jenis_surat.*') ? 'border-l-2 border-brand bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Template Surat</a>
+                        </div>
+                    </details>
+
+                    @if ($isOperator)
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">Admin</x-nav-link>
+                    @endif
                 </nav>
             </div>
 
-            {{-- Kanan: Ikon pencarian + Avatar Inisial Pengguna --}}
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="{{ route('dokumen.index') }}" title="Cari dokumen" class="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-500 transition hover:bg-surface-muted hover:text-ink-900">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
+            {{-- Kanan: menu pengguna --}}
+            <div class="flex items-center gap-2">
+                <a href="{{ route('dokumen.index') }}" aria-label="Cari dokumen" title="Cari dokumen"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-paper hover:text-ink">
+                    <x-icon name="search" class="size-5" />
                 </a>
 
-                {{-- Dropdown Native Sederhana Avatar Inisial Pengguna --}}
                 <details class="relative" id="user-menu-dropdown">
-                    <summary class="flex cursor-pointer list-none items-center gap-1.5 rounded-full p-0.5 outline-none focus:ring-2 focus:ring-green-700/20">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-xs font-semibold text-white">
-                            {{ $initials }}
-                        </span>
-                        <svg class="h-3.5 w-3.5 text-ink-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
+                    <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-paper">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-xs font-semibold text-surface">{{ $initials }}</span>
+                        <span class="hidden max-w-[10rem] truncate text-sm font-medium text-ink md:block">{{ auth()->user()->name }}</span>
+                        <x-icon name="chevron-down" class="hidden size-3.5 text-ink-muted md:block" />
                     </summary>
-                    <div class="absolute right-0 z-50 mt-2 w-60 rounded-md border border-frame bg-surface p-4 text-left shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
-                        <p class="truncate text-sm font-semibold text-ink-900">{{ auth()->user()->name }}</p>
-                        <p class="truncate text-xs text-ink-400">NIP {{ auth()->user()->nip }}</p>
-                        <div class="mt-2">
-                            <span class="inline-block rounded bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700">
-                                {{ auth()->user()->role }}
-                            </span>
+                    <div class="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-line bg-surface p-3 text-left shadow-popover">
+                        <p class="truncate text-sm font-semibold text-ink">{{ auth()->user()->name }}</p>
+                        <p class="tnum truncate text-xs text-ink-muted">NIP {{ auth()->user()->nip }}</p>
+                        <span class="mt-2 inline-block rounded-sm border border-line-strong bg-paper-200 px-2 py-0.5 text-xs font-medium text-ink">{{ auth()->user()->role }}</span>
+
+                        @if ($isOperator)
+                            <div class="mt-3 border-t border-line pt-2">
+                                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 rounded-sm px-2 py-2 text-sm text-ink hover:bg-paper">
+                                    <x-icon name="settings" class="size-4 text-ink-muted" /> Kelola Akun
+                                </a>
+                            </div>
+                        @endif
+
+                        <div class="mt-2 border-t border-line pt-2">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-sm text-ink hover:bg-paper">
+                                    <x-icon name="log-out" class="size-4 text-ink-muted" /> Keluar
+                                </button>
+                            </form>
                         </div>
-                        <div class="my-3 border-t border-frame"></div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="w-full rounded border border-frame-strong bg-surface px-3 py-1.5 text-center text-xs font-medium text-ink-900 transition hover:bg-surface-muted">
-                                Keluar
-                            </button>
-                        </form>
                     </div>
                 </details>
             </div>
         </div>
     </header>
 
-    {{-- Mobile Drawer Navigasi (terbuka dari kiri) --}}
-    <div id="mobile-drawer-backdrop" class="fixed inset-0 z-40 hidden bg-ink-900/50 md:hidden"></div>
-    <aside id="mobile-drawer" class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-frame bg-surface transition-transform duration-200 md:hidden">
-        <div class="flex h-[60px] items-center justify-between border-b border-frame px-4">
-            <div class="flex items-center gap-2">
-                <img src="{{ asset('image.png') }}" alt="Logo Senat FT" class="h-7 w-auto object-contain">
-                <span class="font-display text-sm font-semibold text-ink-900">Senat FT</span>
-            </div>
-            <button id="mobile-drawer-close" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-400 hover:bg-surface-muted hover:text-ink-900" aria-label="Tutup menu">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
+    {{-- Drawer navigasi mobile --}}
+    <div id="mobile-drawer-backdrop" class="fixed inset-0 z-40 hidden bg-ink/50 lg:hidden"></div>
+    <aside id="mobile-drawer" class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-line bg-surface transition-transform lg:hidden">
+        <div class="flex h-16 items-center justify-between border-b border-line px-4">
+            <a href="{{ route('welcome') }}" class="flex items-center gap-2">
+                <img src="{{ asset('image.png') }}" alt="" class="h-7 w-auto object-contain">
+                <span class="font-serif text-sm font-semibold text-ink">Senat FT Unmul</span>
+            </a>
+            <button id="mobile-drawer-close" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-muted hover:bg-paper hover:text-ink" aria-label="Tutup menu">
+                <x-icon name="x" class="size-5" />
             </button>
         </div>
 
-        <nav class="flex-1 space-y-1 overflow-y-auto p-4 text-sm font-medium">
-            <p class="px-2 pb-1 text-xs font-medium text-ink-400">Menu</p>
-            <a href="{{ route('beranda') }}" class="block rounded px-3 py-2 {{ request()->routeIs('beranda') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Beranda
-            </a>
-            <a href="{{ route('dokumen.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Daftar Dokumen
-            </a>
+        <nav class="flex-1 space-y-1 overflow-y-auto p-4 text-sm">
+            <a href="{{ route('beranda') }}" class="block rounded-sm px-3 py-2.5 {{ request()->routeIs('beranda') ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Beranda</a>
+            <a href="{{ route('dokumen.index') }}" class="block rounded-sm px-3 py-2.5 {{ $dokumenAktif ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Daftar Dokumen</a>
 
-            <div class="my-3 border-t border-frame"></div>
-            <p class="px-2 pb-1 text-xs font-medium text-ink-400">Buat dokumen</p>
+            <p class="px-3 pb-1 pt-4 text-xs font-semibold text-ink-muted">Buat dokumen</p>
             @foreach (\App\Models\Document::JENIS as $key => $label)
-                <a href="{{ route('dokumen.baru', $key) }}" class="block rounded px-3 py-2 {{ request()->routeIs('dokumen.baru') && request()->route('jenis') === $key ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                    {{ $label }}
-                </a>
+                <a href="{{ route('dokumen.baru', $key) }}" class="block rounded-sm px-3 py-2.5 {{ request()->routeIs('dokumen.baru') && request()->route('jenis') === $key ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">{{ $label }}</a>
             @endforeach
 
-            <div class="my-3 border-t border-frame"></div>
-            <p class="px-2 pb-1 text-xs font-medium text-ink-400">Pembuat surat</p>
-            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Surat
-            </a>
-            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Template Surat
-            </a>
+            <p class="px-3 pb-1 pt-4 text-xs font-semibold text-ink-muted">Pembuat surat</p>
+            <a href="{{ route('surat.index') }}" class="block rounded-sm px-3 py-2.5 {{ request()->routeIs('surat.*') ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Surat</a>
+            <a href="{{ route('jenis_surat.index') }}" class="block rounded-sm px-3 py-2.5 {{ request()->routeIs('jenis_surat.*') ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Template Surat</a>
 
-            @if (auth()->user()->role === 'admin')
-                <div class="my-3 border-t border-frame"></div>
-                <p class="px-2 pb-1 text-xs font-medium text-ink-400">Admin</p>
-                <a href="{{ route('admin.users.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('admin.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                    Kelola Akun
-                </a>
+            @if ($isOperator)
+                <p class="px-3 pb-1 pt-4 text-xs font-semibold text-ink-muted">Admin</p>
+                <a href="{{ route('admin.users.index') }}" class="block rounded-sm px-3 py-2.5 {{ request()->routeIs('admin.*') ? 'bg-brand-subtle font-semibold text-brand-hover' : 'text-ink hover:bg-paper' }}">Kelola Akun</a>
             @endif
         </nav>
 
-        <div class="border-t border-frame p-4">
+        <div class="border-t border-line p-4">
             <div class="flex items-center gap-3">
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-700 text-xs font-semibold text-white">
-                    {{ $initials }}
-                </span>
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-semibold text-surface">{{ $initials }}</span>
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold text-ink-900">{{ auth()->user()->name }}</p>
-                    <p class="truncate text-[11px] text-ink-400">NIP {{ auth()->user()->nip }}</p>
+                    <p class="truncate text-sm font-semibold text-ink">{{ auth()->user()->name }}</p>
+                    <p class="tnum truncate text-xs text-ink-muted">NIP {{ auth()->user()->nip }}</p>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}" class="mt-3">
                 @csrf
-                <button type="submit" class="w-full rounded border border-frame bg-surface px-3 py-1.5 text-center text-xs font-medium text-ink-900 hover:bg-surface-muted">
-                    Keluar
-                </button>
+                <button type="submit" class="w-full rounded-md border border-control bg-surface px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-paper">Keluar</button>
             </form>
         </div>
     </aside>
 
-    {{-- Flash messages --}}
+    {{-- Pesan flash --}}
     @if (session('status'))
-        <div class="mx-auto w-full max-w-[1200px] px-4 pt-4 sm:px-8">
-            <div class="flex items-center gap-2 rounded-md border border-green-100 bg-green-100 px-4 py-3 text-sm text-green-700">
-                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
-                {{ session('status') }}
-            </div>
+        <div class="mx-auto w-full max-w-page px-4 pt-4 md:px-6">
+            <x-alert variant="success">{{ session('status') }}</x-alert>
         </div>
     @endif
     @if (session('error'))
-        <div class="mx-auto w-full max-w-[1200px] px-4 pt-4 sm:px-8">
-            <div class="flex items-center gap-2 rounded-md border border-error-bg bg-error-bg px-4 py-3 text-sm text-error-text">
-                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                </svg>
-                {{ session('error') }}
-            </div>
+        <div class="mx-auto w-full max-w-page px-4 pt-4 md:px-6">
+            <x-alert variant="error">{{ session('error') }}</x-alert>
         </div>
     @endif
 
-    {{-- Konten Utama --}}
-    <main class="mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-8">
+    <main id="konten" class="mx-auto w-full max-w-page flex-1 px-4 py-8 md:px-6">
         @yield('content')
     </main>
 
-    {{-- Footer --}}
-    <footer class="border-t border-frame bg-surface px-4 py-4 text-center text-xs text-ink-400 sm:px-8">
-        &copy; {{ date('Y') }} Senat Fakultas Teknik, Universitas Mulawarman.
+    <footer class="border-t border-line bg-surface">
+        <div class="mx-auto flex max-w-page flex-col gap-1 px-4 py-4 text-xs text-ink-muted sm:flex-row sm:items-center sm:justify-between md:px-6">
+            <p>&copy; {{ date('Y') }} Senat Fakultas Teknik, Universitas Mulawarman.</p>
+            <p>Sistem internal persuratan Senat FT Unmul.</p>
+        </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('details.nav-dropdown, #user-menu-dropdown').forEach((dropdown) => {
+                dropdown.addEventListener('toggle', () => {
+                    if (!dropdown.open) return;
+                    document.querySelectorAll('details.nav-dropdown, #user-menu-dropdown').forEach((other) => {
+                        if (other !== dropdown) other.open = false;
+                    });
+                });
+            });
+
+            document.addEventListener('click', (event) => {
+                document.querySelectorAll('details.nav-dropdown, #user-menu-dropdown').forEach((dropdown) => {
+                    if (dropdown.open && !dropdown.contains(event.target)) {
+                        dropdown.open = false;
+                    }
+                });
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

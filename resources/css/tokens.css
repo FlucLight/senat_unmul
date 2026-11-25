@@ -1,0 +1,101 @@
+/*
+ * Design tokens — "Institutional Editorial"
+ * Satu-satunya sumber nilai warna, tipografi, radius, dan shadow.
+ * Lihat PRD_Desain_AntiAISlop.md bagian 3.
+ */
+@theme {
+    /* Kosongkan palet/skala bawaan Tailwind; hanya token di file ini yang sah. */
+    --color-*: initial;
+    --font-*: initial;
+    --radius-*: initial;
+    --shadow-*: initial;
+    --text-*: initial;
+
+    /* Nilai dasar yang tetap dibutuhkan utility */
+    --color-transparent: transparent;
+    --radius-full: 9999px;
+
+    /* Tipografi: satu superfamily (Source Serif 4 + Source Sans 3) */
+    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --font-display: var(--font-serif);
+
+    /* Kertas & tinta */
+    --color-paper: #f7f5f0;
+    --color-paper-200: #eeebe3;
+    --color-surface: #ffffff;
+    --color-ink: #1b1f1c;
+    --color-ink-muted: #5b635d;
+    --color-line: #ddd9ce;
+    --color-line-strong: #b8b3a5;
+    --color-control: #85806f;
+
+    /* Hijau institusional: satu-satunya warna aksi */
+    --color-green-50: #eef5f0;
+    --color-green-100: #dcebe2;
+    --color-green-200: #b3d1bd;
+    --color-green-600: #1f6b45;
+    --color-green-700: #17573a;
+    --color-green-800: #124530;
+    --color-green-900: #0d3223;
+
+    /* Emas: hanya garis identitas / kop, bukan warna aksi */
+    --color-gold-50: #faf4e6;
+    --color-gold-100: #f3e6c8;
+    --color-gold-500: #8a5e10;
+    --color-gold-600: #b07a1a;
+    --color-gold-700: #8a5e10;
+
+    /* Status semantik */
+    --color-danger-50: #fbefee;
+    --color-danger-200: #e9c5c2;
+    --color-danger-700: #a12d2d;
+    --color-warning-50: #fff6e0;
+    --color-warning-200: #ebd08a;
+    --color-warning-700: #7a4e00;
+
+    /* Alias semantik */
+    --color-brand: var(--color-green-700);
+    --color-brand-hover: var(--color-green-800);
+    --color-brand-active: var(--color-green-900);
+    --color-brand-subtle: var(--color-green-50);
+    --color-focus: var(--color-green-600);
+
+    /* Alias kompatibilitas untuk view yang belum dimigrasikan */
+    --color-ink-900: var(--color-ink);
+    --color-ink-700: #3b423d;
+    --color-ink-500: var(--color-ink-muted);
+    --color-ink-400: #7a827c;
+    --color-surface-muted: var(--color-paper-200);
+    --color-frame: var(--color-line);
+    --color-frame-strong: var(--color-line-strong);
+    --color-draft-text: var(--color-warning-700);
+    --color-error-bg: var(--color-danger-50);
+    --color-error-text: var(--color-danger-700);
+
+    /* Skala tipografi 7 tingkat */
+    --text-display: 2.25rem;
+    --text-display--line-height: 2.75rem;
+    --text-2xl: 1.75rem;
+    --text-2xl--line-height: 2.25rem;
+    --text-xl: 1.375rem;
+    --text-xl--line-height: 1.875rem;
+    --text-lg: 1.125rem;
+    --text-lg--line-height: 1.75rem;
+    --text-base: 1rem;
+    --text-base--line-height: 1.5rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: 1.25rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: 1rem;
+
+    /* Radius: 4 / 6 / 8 px saja */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+
+    /* Satu-satunya shadow: elemen melayang */
+    --shadow-popover: 0 4px 12px rgb(27 31 28 / 0.12);
+
+    --container-page: 75rem;
+}

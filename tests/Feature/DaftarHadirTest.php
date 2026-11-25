@@ -27,9 +27,9 @@ class DaftarHadirTest extends TestCase
 
         $this->get(route('dokumen.daftar-hadir.create'))
             ->assertOk()
-            ->assertSee('Buat daftar hadir baru')
-            ->assertSee('Informasi acara')
-            ->assertSee('Daftar peserta');
+            ->assertSee('Buat Daftar Hadir')
+            ->assertSee('Informasi Acara')
+            ->assertSee('Daftar Peserta');
     }
 
     public function test_user_can_save_draft_daftar_hadir(): void
@@ -219,9 +219,9 @@ class DaftarHadirTest extends TestCase
         // Access publicly without login
         $this->get(route('dokumen.verifikasi', $doc))
             ->assertOk()
-            ->assertSee('Dokumen Resmi Terverifikasi')
+            ->assertSee('Dokumen Sah')
             ->assertSee('003/DH/Senat-FT/IX/2026')
-            ->assertSee('Rapat Verifikasi QR');
+            ->assertSee('Daftar Hadir');
     }
 
     public function test_generic_placeholder_serves_daftar_hadir_form(): void
@@ -230,6 +230,6 @@ class DaftarHadirTest extends TestCase
 
         $this->get(route('dokumen.baru', 'daftar_hadir'))
             ->assertOk()
-            ->assertSee('Buat daftar hadir baru');
+            ->assertSee('Buat Daftar Hadir');
     }
 }

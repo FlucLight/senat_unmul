@@ -19,19 +19,20 @@ class WelcomeTest extends TestCase
         $response->assertSee('Sistem Manajemen');
         $response->assertSee('Validasi Dokumen');
         $response->assertSee('Masuk');
-        $response->assertSee('Verifikasi Dokumen');
-        $response->assertSee('Tentang sistem');
-        $response->assertSee('Jenis dokumen yang dikelola');
+        $response->assertSee('Periksa Keaslian Dokumen');
+        $response->assertSee('Tentang');
+        $response->assertSee('Jenis Dokumen');
         $response->assertSee('Daftar Hadir');
-        $response->assertSee('Alur kerja sistem');
+        $response->assertSee('Alur Penerbitan');
     }
 
-    public function test_authenticated_user_is_redirected_to_beranda(): void
+    public function test_authenticated_user_can_access_welcome_page(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('welcome'))
-            ->assertRedirect(route('beranda'));
+            ->assertOk()
+            ->assertSee('Sistem Manajemen');
     }
 
     public function test_public_can_verify_valid_nomor_surat_on_welcome_page(): void
@@ -55,9 +56,9 @@ class WelcomeTest extends TestCase
         $response = $this->get(route('welcome', ['nomor_surat' => '005/DH/Senat-FT/IX/2026']));
 
         $response->assertOk();
-        $response->assertSee('Dokumen ini terverifikasi asli dari Senat FT');
+        $response->assertSee('Dokumen Sah');
         $response->assertSee('005/DH/Senat-FT/IX/2026');
-        $response->assertSee('Rapat Pleno Terbuka');
+        $response->assertSee('Daftar Hadir');
         // W-5: Must not reveal attendee full list for privacy
         $response->assertDontSee('Prof. Rahmad');
     }
@@ -67,7 +68,7 @@ class WelcomeTest extends TestCase
         $response = $this->get(route('welcome', ['nomor_surat' => '999/XYZ/Senat-FT/2026']));
 
         $response->assertOk();
-        $response->assertSee('Nomor surat tidak ditemukan');
+        $response->assertSee('Dokumen Tidak Ditemukan');
         $response->assertSee('999/XYZ/Senat-FT/2026');
     }
 

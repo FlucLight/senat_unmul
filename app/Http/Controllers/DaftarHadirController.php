@@ -218,12 +218,17 @@ class DaftarHadirController extends Controller
 
     public function verifikasi(Document $document)
     {
-        abort_unless($document->isFinal(), 404);
         $document->load('creator');
+
+        $state = match (true) {
+            $document->isFinal() => 'sah',
+            $document->status === Document::STATUS_DIBATALKAN => 'dibatalkan',
+            default => 'tidak_ditemukan',
+        };
 
         return view('dokumen.verifikasi', [
             'document' => $document,
-            'content' => (array) $document->content,
+            'state' => $state,
         ]);
     }
 
