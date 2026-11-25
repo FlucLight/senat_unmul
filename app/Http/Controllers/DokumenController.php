@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Services\Document\DocumentRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,11 +41,14 @@ class DokumenController extends Controller
         ]);
     }
 
-    public function show(Document $document)
+    public function show(Document $document, DocumentRenderer $renderer)
     {
         $document->load('creator');
 
-        return view('dokumen.show', compact('document'));
+        return view('dokumen.show', [
+            'document' => $document,
+            'preview' => $renderer->preview($document),
+        ]);
     }
 
     public function destroy(Document $document)
@@ -57,7 +61,7 @@ class DokumenController extends Controller
             ->with('status', 'Dokumen draft berhasil dihapus.');
     }
 
-    public function downloadPdf(Document $document)
+    public function downloadPdf(Document $document, DocumentRenderer $renderer)
     {
         if ($document->isDraft()) {
             return redirect()->route('dokumen.show', $document)
@@ -68,32 +72,19 @@ class DokumenController extends Controller
             return Storage::disk('public')->download($document->pdf_path);
         }
 
-        // Generate PDF on-the-fly via DomPDF
-        $view = 'dokumen.' . $document->jenis . '.print';
-        if (view()->exists($view)) {
-            $qrDataUri = null;
-            if ($document->qr_verification_url) {
-                try {
-                    $qrDataUri = app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url);
-                } catch (\Throwable $e) {
-                    $qrDataUri = null;
-                }
-            }
-
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, [
-                'document' => $document->loadMissing('creator'),
-                'content' => (array) $document->content,
-                'qrDataUri' => $qrDataUri,
-            ])->setPaper('a4');
-
+        $payload = $renderer->pdfPayload($document);
+        if (view()->exists($payload['view'])) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])->setPaper('a4');
             $filename = str_replace(['/', '\\'], '-', $document->nomor_surat ?: 'dokumen-' . $document->id) . '.pdf';
+
             return $pdf->download($filename);
         }
 
-        if (in_array($document->jenis, ['daftar_hadir', 'undangan', 'berita_acara', 'surat_pengantar'])) {
+        if (in_array($document->jenis, ['daftar_hadir', 'undangan', 'berita_acara', 'surat_pengantar'], true)) {
             $routeName = $document->jenis === 'daftar_hadir'
                 ? 'dokumen.cetak'
                 : 'dokumen.' . str_replace('_', '-', $document->jenis) . '.cetak';
+
             return redirect()->route($routeName, $document);
         }
 

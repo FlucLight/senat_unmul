@@ -61,7 +61,7 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {{-- Lembar dokumen --}}
             <div class="lg:col-span-8">
-                @include('dokumen._preview', ['document' => $document])
+                {!! $preview !!}
             </div>
 
             {{-- Informasi --}}

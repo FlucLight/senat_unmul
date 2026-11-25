@@ -102,7 +102,7 @@
     <p>Samarinda, {{ $finalTgl }}</p>
     <p>Pemimpin Rapat</p>
     <div style="height:70px;"></div>
-    <p><strong><u>{{ $content['pemimpin_rapat'] ?: ($document->creator->name ?? '-') }}</u></strong></p>
+    <p><strong><u>{{ ($content['pemimpin_rapat'] ?? '') ?: ($document->creator->name ?? '-') }}</u></strong></p>
 </td></tr></table>
 
 @if(!empty($qrDataUri))

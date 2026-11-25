@@ -80,7 +80,7 @@
         <td></td>
         <td class="right">
             <p>Samarinda, {{ $finalTgl }}</p>
-            <p>{{ $content['penandatangan'] ?: 'Penandatangan' }}</p>
+            <p>{{ ($content['penandatangan'] ?? '') ?: 'Penandatangan' }}</p>
             <div style="height:70px;"></div>
             <p><strong><u>{{ $document->creator->name ?? '-' }}</u></strong></p>
             <p>NIP {{ $document->creator->nip ?? '-' }}</p>

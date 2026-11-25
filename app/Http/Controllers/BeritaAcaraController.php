@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Services\Document\DocumentRenderer;
 use App\Services\NomorSuratService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,16 +44,12 @@ class BeritaAcaraController extends Controller
         return $this->save($request, $document);
     }
 
-    public function printView(Document $document)
+    public function printView(Document $document, DocumentRenderer $renderer)
     {
         abort_unless($document->jenis === 'berita_acara', 404);
         $document->load('creator');
 
-        return view('dokumen.berita_acara.print', [
-            'document' => $document,
-            'content' => (array) $document->content,
-            'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url ?? route('dokumen.verifikasi', $document->id)),
-        ]);
+        return $renderer->print($document);
     }
 
     protected function defaultContent(): array
@@ -139,11 +136,9 @@ class BeritaAcaraController extends Controller
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
 
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.berita_acara.print', [
-                    'document' => $document->fresh(),
-                    'content' => (array) $document->fresh()->content,
-                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
-                ]);
+                $fresh = $document->fresh()->load('creator');
+                $payload = app(\App\Services\Document\DocumentRenderer::class)->pdfPayload($fresh);
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])->setPaper('a4');
                 $path = 'dokumen/' . $document->id . '.pdf';
                 \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
                 $document->update(['pdf_path' => $path]);
@@ -157,3 +152,4 @@ class BeritaAcaraController extends Controller
         });
     }
 }
+

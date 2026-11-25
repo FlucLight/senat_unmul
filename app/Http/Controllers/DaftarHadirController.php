@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Services\Document\DocumentRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -86,11 +87,9 @@ class DaftarHadirController extends Controller
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
 
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.daftar_hadir.print', [
-                    'document' => $document->fresh(),
-                    'content' => (array) $document->fresh()->content,
-                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
-                ]);
+                $fresh = $document->fresh()->load('creator');
+                $payload = app(\App\Services\Document\DocumentRenderer::class)->pdfPayload($fresh);
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])->setPaper('a4');
                 $path = 'dokumen/' . $document->id . '.pdf';
                 \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
                 $document->update(['pdf_path' => $path]);
@@ -186,11 +185,9 @@ class DaftarHadirController extends Controller
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
 
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.daftar_hadir.print', [
-                    'document' => $document->fresh(),
-                    'content' => (array) $document->fresh()->content,
-                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
-                ]);
+                $fresh = $document->fresh()->load('creator');
+                $payload = app(\App\Services\Document\DocumentRenderer::class)->pdfPayload($fresh);
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($payload['view'], $payload['data'])->setPaper('a4');
                 $path = 'dokumen/' . $document->id . '.pdf';
                 \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
                 $document->update(['pdf_path' => $path]);
@@ -204,16 +201,12 @@ class DaftarHadirController extends Controller
         });
     }
 
-    public function printView(Document $document)
+    public function printView(Document $document, DocumentRenderer $renderer)
     {
         abort_unless($document->jenis === 'daftar_hadir', 404);
         $document->load('creator');
 
-        return view('dokumen.daftar_hadir.print', [
-            'document' => $document,
-            'content' => (array) $document->content,
-            'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url ?? route('dokumen.verifikasi', $document->id)),
-        ]);
+        return $renderer->print($document);
     }
 
     public function verifikasi(Document $document)
@@ -246,3 +239,4 @@ class DaftarHadirController extends Controller
         return "{$sequence}/DH/Senat-FT/{$month}/{$year}";
     }
 }
+
