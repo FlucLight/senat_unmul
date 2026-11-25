@@ -68,8 +68,21 @@ class DokumenController extends Controller
             return Storage::disk('public')->download($document->pdf_path);
         }
 
-        if ($document->jenis === 'daftar_hadir') {
-            return redirect()->route('dokumen.cetak', $document);
+        // Generate PDF on-the-fly via DomPDF (Fase 2)
+        $view = 'dokumen.' . $document->jenis . '.print';
+        if (view()->exists($view)) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, [
+                'document' => $document,
+                'content' => (array) $document->content,
+            ]);
+            return $pdf->download('dokumen-' . $document->id . '.pdf');
+        }
+
+        if (in_array($document->jenis, ['daftar_hadir', 'undangan', 'berita_acara', 'surat_pengantar'])) {
+            $routeName = $document->jenis === 'daftar_hadir'
+                ? 'dokumen.cetak'
+                : 'dokumen.' . str_replace('_', '-', $document->jenis) . '.cetak';
+            return redirect()->route($routeName, $document);
         }
 
         return redirect()->route('dokumen.show', $document)
@@ -78,8 +91,15 @@ class DokumenController extends Controller
 
     public function createPlaceholder(Request $request, string $jenis)
     {
-        if ($jenis === 'daftar_hadir') {
-            return redirect()->route('dokumen.daftar-hadir.create');
+        $routes = [
+            'daftar_hadir' => 'dokumen.daftar-hadir.create',
+            'undangan' => 'dokumen.undangan.create',
+            'berita_acara' => 'dokumen.berita-acara.create',
+            'surat_pengantar' => 'dokumen.surat-pengantar.create',
+        ];
+
+        if (isset($routes[$jenis])) {
+            return redirect()->route($routes[$jenis]);
         }
 
         abort_unless(array_key_exists($jenis, Document::JENIS), 404);
@@ -93,8 +113,15 @@ class DokumenController extends Controller
 
     public function editPlaceholder(Request $request, string $jenis, Document $document)
     {
-        if ($jenis === 'daftar_hadir') {
-            return redirect()->route('dokumen.daftar-hadir.edit', $document);
+        $routes = [
+            'daftar_hadir' => 'dokumen.daftar-hadir.edit',
+            'undangan' => 'dokumen.undangan.edit',
+            'berita_acara' => 'dokumen.berita-acara.edit',
+            'surat_pengantar' => 'dokumen.surat-pengantar.edit',
+        ];
+
+        if (isset($routes[$jenis])) {
+            return redirect()->route($routes[$jenis], $document);
         }
 
         abort_unless(array_key_exists($jenis, Document::JENIS), 404);

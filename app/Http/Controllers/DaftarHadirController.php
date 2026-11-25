@@ -78,13 +78,22 @@ class DaftarHadirController extends Controller
             ]);
 
             if ($isFinal) {
-                $nomorSurat = $this->generateNomorSurat();
+                $nomorSurat = app(\App\Services\NomorSuratService::class)->generate('daftar_hadir');
                 $document->update([
                     'status' => Document::STATUS_FINAL,
                     'nomor_surat' => $nomorSurat,
                     'finalized_at' => now(),
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
+
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.daftar_hadir.print', [
+                    'document' => $document->fresh(),
+                    'content' => (array) $document->fresh()->content,
+                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
+                ]);
+                $path = 'dokumen/' . $document->id . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
+                $document->update(['pdf_path' => $path]);
 
                 return redirect()->route('dokumen.show', $document)
                     ->with('status', 'Daftar hadir berhasil difinalisasi dan nomor surat resmi telah diterbitkan.');
@@ -169,13 +178,22 @@ class DaftarHadirController extends Controller
             ]);
 
             if ($isFinal) {
-                $nomorSurat = $this->generateNomorSurat();
+                $nomorSurat = app(\App\Services\NomorSuratService::class)->generate('daftar_hadir');
                 $document->update([
                     'status' => Document::STATUS_FINAL,
                     'nomor_surat' => $nomorSurat,
                     'finalized_at' => now(),
                     'qr_verification_url' => route('dokumen.verifikasi', $document->id),
                 ]);
+
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dokumen.daftar_hadir.print', [
+                    'document' => $document->fresh(),
+                    'content' => (array) $document->fresh()->content,
+                    'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri(route('dokumen.verifikasi', $document->id)),
+                ]);
+                $path = 'dokumen/' . $document->id . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, $pdf->output());
+                $document->update(['pdf_path' => $path]);
 
                 return redirect()->route('dokumen.show', $document)
                     ->with('status', 'Daftar hadir berhasil difinalisasi dan nomor surat resmi telah diterbitkan.');
@@ -194,6 +212,7 @@ class DaftarHadirController extends Controller
         return view('dokumen.daftar_hadir.print', [
             'document' => $document,
             'content' => (array) $document->content,
+            'qrDataUri' => app(\App\Services\QrCodeService::class)->dataUri($document->qr_verification_url ?? route('dokumen.verifikasi', $document->id)),
         ]);
     }
 

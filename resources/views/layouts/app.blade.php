@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistem Senat Fakultas Teknik')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="flex min-h-full flex-col bg-paper antialiased">
     @php
@@ -35,12 +36,17 @@
 
                 {{-- Navigasi Desktop (teks saja, underline 2px green-700 saat aktif) --}}
                 <nav class="hidden h-full items-center md:flex">
+                    @if (auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')">
+                            Kelola Akun
+                        </x-nav-link>
+                    @endif
                     <x-nav-link :href="route('beranda')" :active="request()->routeIs('beranda')">
                         Beranda
                     </x-nav-link>
 
                     <x-nav-link :href="route('dokumen.index')" :active="request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show')">
-                        Daftar Isi
+                        Daftar Dokumen
                     </x-nav-link>
 
                     @foreach (\App\Models\Document::JENIS as $key => $label)
@@ -48,6 +54,17 @@
                             {{ $label }}
                         </x-nav-link>
                     @endforeach
+
+                    <details class="relative">
+                        <summary class="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-surface-muted">
+                            Pembuat Surat
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </summary>
+                        <div class="absolute left-0 z-50 mt-1 w-44 rounded-md border border-frame bg-surface p-1 shadow-[0_2px_8px_rgba(34,34,29,0.08)]">
+                            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Surat</a>
+                            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">Template Surat</a>
+                        </div>
+                    </details>
                 </nav>
             </div>
 
@@ -111,7 +128,7 @@
                 Beranda
             </a>
             <a href="{{ route('dokumen.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('dokumen.index') || request()->routeIs('dokumen.show') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
-                Daftar Isi
+                Daftar Dokumen
             </a>
 
             <div class="my-3 border-t border-frame"></div>
@@ -121,6 +138,23 @@
                     {{ $label }}
                 </a>
             @endforeach
+
+            <div class="my-3 border-t border-frame"></div>
+            <p class="px-2 pb-1 text-xs font-medium text-ink-400">Pembuat surat</p>
+            <a href="{{ route('surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                Surat
+            </a>
+            <a href="{{ route('jenis_surat.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('jenis_surat.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                Template Surat
+            </a>
+
+            @if (auth()->user()->role === 'admin')
+                <div class="my-3 border-t border-frame"></div>
+                <p class="px-2 pb-1 text-xs font-medium text-ink-400">Admin</p>
+                <a href="{{ route('admin.users.index') }}" class="block rounded px-3 py-2 {{ request()->routeIs('admin.*') ? 'bg-green-100 text-green-700' : 'text-ink-700 hover:bg-surface-muted' }}">
+                    Kelola Akun
+                </a>
+            @endif
         </nav>
 
         <div class="border-t border-frame p-4">
@@ -173,5 +207,6 @@
     <footer class="border-t border-frame bg-surface px-4 py-4 text-center text-xs text-ink-400 sm:px-8">
         &copy; {{ date('Y') }} Senat Fakultas Teknik, Universitas Mulawarman.
     </footer>
+    @stack('scripts')
 </body>
 </html>
